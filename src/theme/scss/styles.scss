@@ -1,0 +1,22 @@
+
+//@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap");
+//@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+@import './variables';
+@import './bootstrap';
+
+
+html {
+    background: $white1;
+    background-color: $white1 !important;
+
+  }
+  
+  body {
+    font-family: $font-family;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 17px;
+    color: $body-color;
+    margin-bottom: 0;
+  }
+  

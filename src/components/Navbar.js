@@ -1,89 +1,41 @@
-import React, { useState } from "react";
-import { NavLink, withRouter } from "react-router-dom";
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
 
-const Navbar = ({ history }) => {
-  const [isOpen, setOpen] = useState(false);
 
-  const isAuth = !!localStorage.getItem("token");
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  title: {
+    flexGrow: 1,
+  },
+}));
 
-  const loginUser = () => {
-    localStorage.setItem("token", "some-login-token");
-    history.push("/profile/Vijit");
-  };
-
-  const logoutUser = () => {
-    localStorage.removeItem("token");
-    history.push("/");
-  };
+export default function ButtonAppBar() {
+  const classes = useStyles();
 
   return (
-    <nav
-      className="navbar is-primary"
-      role="navigation"
-      aria-label="main navigation"
-    >
-      <div className="container">
-        <div className="navbar-brand">
-          <a
-            role="button"
-            className={`navbar-burger burger ${isOpen && "is-active"}`}
-            aria-label="menu"
-            aria-expanded="false"
-            onClick={() => setOpen(!isOpen)}
-          >
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-          </a>
-        </div>
-
-        <div className={`navbar-menu ${isOpen && "is-active"}`}>
-          <div className="navbar-start">
-            <NavLink
-              className="navbar-item"
-              activeClassName="is-active"
-              to="/"
-              exact
-            >
-              Home
-            </NavLink>
-
-            <NavLink
-              className="navbar-item"
-              activeClassName="is-active"
-              to="/about"
-            >
-              About
-            </NavLink>
-
-            <NavLink
-              className="navbar-item"
-              activeClassName="is-active"
-              to="/profile/Vijit"
-            >
-              Profile
-            </NavLink>
-          </div>
-
-          <div className="navbar-end">
-            <div className="navbar-item">
-              <div className="buttons">
-                {!isAuth ? (
-                  <button className="button is-white" onClick={loginUser}>
-                    Log in
-                  </button>
-                ) : (
-                  <button className="button is-black" onClick={logoutUser}>
-                    Log out
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </nav>
+    <div className={classes.root}>
+      <AppBar position="static">
+        <Toolbar>
+          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" className={classes.title}>
+            Bucket List
+          </Typography>
+          <Button color="inherit">Login</Button>
+        </Toolbar>
+      </AppBar>
+    </div>
   );
-};
-
-export default withRouter(Navbar);
+}

@@ -1,0 +1,42 @@
+/* stylelint-disable */
+
+$font-family: Roboto, "Gill Sans", "Gill Sans MT", "Trebuchet MS", sans-serif;
+
+$white1: #fff;
+$orange: #ffa500;
+$orangeRgb: rgba(255, 165, 0, 1);
+
+$green: #008435;
+$greenRgb: rgba(0, 132, 53, 1);
+
+$red: #8e1216;
+$redRgb: rgba(142, 18, 22, 1);
+
+$grey1: #f4f4f4;
+$grey2: #9c9d9d;
+$grey3: #e0e0e0;
+$dark1: #363636;
+$black: #000;
+
+
+// bootstrap variable overites
+$primary: $black;
+$secondary: $green;
+$danger: $red;
+$dark: $dark1;
+$warning: $orange;
+$muted: $grey2;
+
+$body-color: $black;
+$white: $white1;
+$body-bg: $grey1;
+
+$theme-colors: (
+  "primary": $primary,
+  "dark": $black,
+  "white": $white,
+  "muted": $muted,
+  "secondary": $secondary,
+);
+
+$default-border-radius: 2px;

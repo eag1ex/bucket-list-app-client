@@ -16,37 +16,38 @@
         "javascriptreact"
     ],
     "eslint.options": {
-        "configFile": "eslintrc.json"
+        "configFile": ".eslintrc"
     },
     "eslint.format.enable": true,
     "eslint.probe": [
         "javascript",
         "javascriptreact",
         "markdown"
-      ],
-      "editor.wordWrap": "on",
-      "sasslint.enable": true,
+    ],
+    "editor.wordWrap": "on",
+    "sasslint.enable": true,
     "peacock.affectActivityBar": true,
     "peacock.affectStatusBar": true,
     "peacock.affectTitleBar": true,
     "peacock.elementAdjustments": {
         "activityBar": "lighten"
-      },
-      "standard.options": {
+    },
+    "standard.options": {
+
         "ignore": [
-          "node_modules/**"
+            "node_modules/**"
         ],
         "plugins": [
-          "html"
+            "html"
         ],
         "parser": "babel-eslint",
         "envs": [
-          "jest"
+            "jest"
         ]
-      },
+    },
     "standard.enable": false,
-    "standard.engine":"standard",
-    "standard.validate":[
+    "standard.engine": "standard",
+    "standard.validate": [
         "javascript",
         "javascriptreact",
         "typescript",
@@ -110,10 +111,6 @@
             "value": "#42b883"
         }
     ],
-    "[javascript]": {
-        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-      },
-
     "update.enableWindowsBackgroundUpdates": false,
     "update.mode": "manual",
     "update.showReleaseNotes": false,
@@ -126,7 +123,7 @@
         "editor.formatOnSave": false,
         "editor.tabSize": 2,
         "editor.codeActionsOnSave": {
-            "source.fixAll.eslint": false
+            "source.fixAll.eslint": true
         }
     },
     "[scss]": {
@@ -146,16 +143,16 @@
         "statusBar.background": "#215732",
         "statusBarItem.hoverBackground": "#2f7c47",
         "statusBar.foreground": "#e7e7e7"
-      },
-      "editor.codeActionsOnSave": {
+    },
+    "editor.codeActionsOnSave": {
         // For ESLint
         "source.fixAll.eslint": true,
         // For TSLint
         "source.fixAll.tslint": false,
         // For Stylelint
         "source.fixAll.stylelint": true
-      },
-      "tslint.enable":false,
-      "tslint.jsEnable":false,
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
+    },
+    "tslint.enable": false,
+    "tslint.jsEnable": false,
+    "scss.validate":true
 }

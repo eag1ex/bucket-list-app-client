@@ -11,9 +11,11 @@
 # production
 /build
 
-
 #other
 info.md
+desktop.ini
+assets
+
 # misc
 .DS_Store
 .env.local

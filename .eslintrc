@@ -1,0 +1,15 @@
+{
+
+  "parser": "babel-eslint",
+
+  "rules": {
+    "jsx-quotes":"off",
+    "react/prop-types": 0,
+    "no-undef":"warn",
+    "no-unused-vars":"warn"
+  },
+  "plugins": [
+    "react"
+  ],
+  "extends": ["eslint:recommended", "plugin:react/recommended"]
+}
