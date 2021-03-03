@@ -8,7 +8,7 @@ module.exports = function override(config) {
     '@components':'src/components',
     '@assets':'src/assets',
     '@images':'src/theme/images',
-
+    '@utils':'src/utils'
   })(config)
 
   return config

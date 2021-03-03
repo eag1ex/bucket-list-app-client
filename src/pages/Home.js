@@ -34,7 +34,7 @@ class Home extends PureComponent {
       <div className="row">   
           <div className="col-8 m-auto">
               <div className="d-flex justify-content-center align-items-center w-50 m-auto">
-                  <Input variantName='outlined' text="Outline"/><Add actionAdd={this.actionAdd.bind(this)} />
+                  <Input variantName='outlined' text="New bucket"/><Add actionAdd={this.actionAdd.bind(this)} />
               </div>
           </div>
       </div>

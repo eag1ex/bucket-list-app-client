@@ -6,7 +6,8 @@
         "@components": [ "src/components"],
         "@pages": [ "src/pages"],
         "@scss/pages":["src/theme/scss/pages"],
-        "@scss":["src/theme/scss"]
+        "@scss":["src/theme/scss"],
+        "@utils":["src/utils"]
       }
     }
   }

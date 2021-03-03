@@ -3,9 +3,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Typography from '@material-ui/core/Typography';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const useStyles = makeStyles({
@@ -15,10 +14,21 @@ const useStyles = makeStyles({
 });
 
 
-export default function AccordionSection({Todos}) {
+export default function AccordionSection({ Todos,Check, item, inx, onUpdate,checked }) {
+
+  let { id, title, status, created_at, subtasks } = item
+
+
+//   <AccordionSummary
+//   expandIcon={<ExpandMoreIcon />}
+//   aria-controls="panel1a-content"
+//   id="panel1a-header"
+// >
+//   <Typography className={classes.heading}>Accordion 1</Typography>
+// </AccordionSummary>
 
   const classes = useStyles();
-    return (<div className={classes.root}>
+  return (<div className={classes.root}>
     <Accordion>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
@@ -26,21 +36,19 @@ export default function AccordionSection({Todos}) {
         aria-controls="additional-actions1-content"
         id="additional-actions1-header"
       >
+ 
         <FormControlLabel
           aria-label="Acknowledge"
-          onClick={(event) => event.stopPropagation()}
-          onFocus={(event) => event.stopPropagation()}
-          control={<Checkbox />}
-          label="I acknowledge that I should stop the click event propagation"
+        //  onClick={(event) => event.stopPropagation()}
+        //  onFocus={(event) => event.stopPropagation()}
+          control={
+            <Check/>
+            }
+          label={title}
         />
       </AccordionSummary>
       <AccordionDetails>
-      <Todos/>
-        <Typography color="textSecondary">
-       
-         The click event of the nested action will propagate up and expand the accordion unless
-            you explicitly stop it.  
-        </Typography>
+        <Todos />
       </AccordionDetails>
     </Accordion>
   </div>)
