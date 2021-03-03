@@ -14,18 +14,10 @@ const useStyles = makeStyles({
 });
 
 
-export default function AccordionSection({ Todos,Check, item, inx, onUpdate,checked }) {
+export default function AccordionSection({ Todos,Check, item }) {
 
   let { id, title, status, created_at, subtasks } = item
 
-
-//   <AccordionSummary
-//   expandIcon={<ExpandMoreIcon />}
-//   aria-controls="panel1a-content"
-//   id="panel1a-header"
-// >
-//   <Typography className={classes.heading}>Accordion 1</Typography>
-// </AccordionSummary>
 
   const classes = useStyles();
   return (<div className={classes.root}>
@@ -39,8 +31,8 @@ export default function AccordionSection({ Todos,Check, item, inx, onUpdate,chec
  
         <FormControlLabel
           aria-label="Acknowledge"
-        //  onClick={(event) => event.stopPropagation()}
-        //  onFocus={(event) => event.stopPropagation()}
+          onClick={(event) => event.stopPropagation()}
+          onFocus={(event) => event.stopPropagation()}
           control={
             <Check/>
             }

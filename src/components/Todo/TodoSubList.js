@@ -5,12 +5,12 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
-import Input from './Input';
-import Add from './Add';
-import { statusTypes } from '../utils/utils';
+import Input from '../Input';
+import Add from '../Add';
+import { statusTypes,tasksComplete,tasksPending } from '../../utils/utils';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { delay, log,copy } from 'x-utils-es';
+import { delay, log, copy, isFunction } from 'x-utils-es';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -21,25 +21,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
- 
+
 
 export default class TodoSubList extends React.Component {
     constructor(props, context) {
         super(props);
         this.state = {
             subtasks: [],
-            status:'pending',// [pending,completed]
-            id: '',// id of current subtask
-            index:0
-        } 
-        this.rendered = false
+            status: 'pending',// [pending,completed]
+            id: '',// id of bucket 
+        }
+
     }
 
- 
-
-    // static getDerivedStateFromProps(){
-    //     log('[getDerivedStateFromProps]', this.props)
-    // }
     // componentDidUpdate(){
     //   log('[componentDidUpdate]', this.props)
     //   if(this.props.subtasks) this.setState({subtasks:this.props.subtasks})
@@ -47,20 +41,21 @@ export default class TodoSubList extends React.Component {
     // }
 
     componentDidMount() {
-        log('[componentDidMount]',this.props.subtasks ,this.state.subtasks )
-        this.setState({ subtasks: this.props.subtasks })
-        this.setState({ id: this.props.id })
+
+        if (this.props.subtasks) this.setState({ subtasks: this.props.subtasks })
+        if (this.props.id) this.setState({ id: this.props.id })
+
     }
 
-    ListItems = ({ subtasks,id }) => {
-
+    SubList = ({ subtasks }) => {
+        //log('[SubList]', subtasks)
         const classes = useStyles();
         const [checked, setChecked] = React.useState([0]);
 
         // update checked
         subtasks.filter(n => {
             if (statusTypes(n.status) && checked.indexOf(n.todo_id) === -1) checked.push(n.todo_id)
-        })   
+        })
 
         const onUpdate = this.props.onUpdate
 
@@ -69,20 +64,13 @@ export default class TodoSubList extends React.Component {
             const currentIndex = checked.indexOf(_id);
             const newChecked = [...checked];
 
-            if (currentIndex === -1) {
-                newChecked.push(_id);
-                // onUpdate(id, 'completed', 'list')     
-                this.updateSubtasks(_id, 'completed', 'list')   
+            if (currentIndex === -1) newChecked.push(_id);
+            else newChecked.splice(currentIndex, 1);
 
-            } else {
-                newChecked.splice(currentIndex, 1);
-                this.updateSubtasks(_id, 'pending', 'list')
-            
-            }
+            this.updateSubtasks(_id, (currentIndex!==-1 ? 'pending' : 'completed'), onUpdate)
             setChecked(newChecked);
         }
 
-        this.rendered = true
 
         return (
             <List className={classes.root + ` m-auto`}>
@@ -92,11 +80,11 @@ export default class TodoSubList extends React.Component {
                     const labelId = `checkbox-list-label-${inx}`;
 
                     return (
-                        <ListItem 
-                        key={todo_id} role={undefined} dense button onClick={(event) => {                       
-                            handleUpdate(todo_id)
-                            event.stopPropagation()                       
-                        }}>
+                        <ListItem
+                            key={todo_id} role={undefined} dense button onClick={(event) => {
+                                handleUpdate(todo_id)
+                                event.stopPropagation()
+                            }}>
                             <ListItemIcon>
                                 <Checkbox
                                     edge="start"
@@ -132,50 +120,56 @@ export default class TodoSubList extends React.Component {
     }
 
 
-    // updateSubtasks(){
-    //     let subsCompleted = this.state.subtasks.filter(n => n.status === 'completed').length ===this.state.subtasks.length
-    //     if(subsCompleted) this.setState({status:'completed'})
-    //     else this.setState({status:'pending'})
-
-    //     log('[updateSubtasks]',subsCompleted,this.state.subtasks)
-    // }
-
     /**
      * 
      * @param {*} id 
      * @param {*} status [pending, completed]
-     * @param {*} origin  [bucket, or > list] 
+     * @param {*} updateBucket is a hoc callback 
      */
-    updateSubtasks(id, status, origin = 'list') {
-    
-        log('[updateSubtasks]', { id, status, origin })
+    async updateSubtasks(id, status, updateBucket) {
 
-        let subtasks = this.state.subtasks.map(el=>{
-            if (el.todo_id === id && status === 'completed') {
-                el.status = 'completed'
-            }
+        let initallyCompleted = tasksComplete(this.state.subtasks)
+        
+        
 
-            if (el.todo_id === id && status === 'pending') {
-                el.status = 'pending'
-            }
-
+        let subtasks = this.state.subtasks.map(el => {
+            if (el.todo_id === id && status === 'completed') el.status = 'completed'
+            if (el.todo_id === id && status === 'pending') el.status = 'pending'
             return el
         })
 
-        let subsCompleted = subtasks.filter(n => n.status === 'completed').length ===subtasks.length
+        let subsCompleted = tasksComplete(subtasks)
 
-        this.setState({ subtasks,status:'completed' ,index:this.state.index +1, 
-                        ...(subsCompleted ? {status:'completed'}:{status:'pending'}) }, () => {
-            log('[setState][subtasks][updateSubtasks]', this.state.subtasks)
+        // if (isFunction(updateBucket) && initallyCompleted && !subsCompleted) {
+        //     await delay(50)
+        //     await updateBucket(this.state.id,'pending','list')
+        // }
+
+        log({subsCompleted,subtasks,id, status})
+
+
+        this.setState({
+            subtasks, status: 'completed',
+            ...(subsCompleted ? { status: 'completed' } : { status: 'pending' })
+        }, () => {
+            log('[updateSubtasks][setState][subtasks]', this.state.subtasks)
+
+            if (subsCompleted){
+                if (isFunction(updateBucket) ) updateBucket(this.state.id,'completed','bucket')
+            }
+
+            if (initallyCompleted && !subsCompleted) {
+                if(isFunction(updateBucket) )  updateBucket(this.state.id,'completed','list')
+            }
+
         })
+
     }
 
-
     render() {
-
         return (<React.Fragment>
-            { !this.state.subtasks.length ? <CircularProgress color="inherit" size={20} /> : 
-            <this.ListItems subtasks={this.state.subtasks} id={this.state.id} />}
+            { !this.state.subtasks.length ? <CircularProgress color="inherit" size={20} /> :
+                <this.SubList subtasks={this.state.subtasks} />}
         </React.Fragment>)
     }
 }
