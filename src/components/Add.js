@@ -27,9 +27,8 @@ const useStyles = (opts = {}) => makeStyles((theme) => {
 
 export default function FloatingActionButtons({actionAdd,style}) {
   const classes = useStyles({style});
-  const onClick = (event) => {
-    actionAdd('hello from input')
-  };  
+  const onClick = (event) => (actionAdd ? actionAdd():null);  
+
   return (
     <div className={classes.root}>
       <Fab color="primary" aria-label="add">

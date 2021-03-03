@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -7,10 +7,11 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import Input from '../Input';
 import Add from '../Add';
-import { statusTypes,tasksComplete,tasksPending } from '../../utils/utils';
+import { statusTypes, tasksComplete, tasksPending } from '../../utils/utils';
+import { v4 } from 'uuid';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { delay, log, copy, isFunction } from 'x-utils-es';
+import { delay, log, copy, isFunction, sq } from 'x-utils-es';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -30,6 +31,7 @@ export default class TodoSubList extends React.Component {
             subtasks: [],
             status: 'pending',// [pending,completed]
             id: '',// id of bucket 
+            newListText:'New List'
         }
 
     }
@@ -47,10 +49,21 @@ export default class TodoSubList extends React.Component {
 
     }
 
-    SubList = ({ subtasks }) => {
+    dummyAddItem({title}){
+        return {
+            todo_id: v4(),
+            title,
+            status: 'pending', // [pending/completed]
+            created_at: ''
+        }
+    }
+
+     SubList = ({ subtasks }) => {
         //log('[SubList]', subtasks)
+
         const classes = useStyles();
         const [checked, setChecked] = React.useState([0]);
+        const [listName, setListName] = React.useState({text:''});
 
         // update checked
         subtasks.filter(n => {
@@ -63,22 +76,19 @@ export default class TodoSubList extends React.Component {
 
             const currentIndex = checked.indexOf(_id);
             const newChecked = [...checked];
-
             if (currentIndex === -1) newChecked.push(_id);
             else newChecked.splice(currentIndex, 1);
 
-            this.updateSubtasks(_id, (currentIndex!==-1 ? 'pending' : 'completed'), onUpdate)
+            this.updateSubtasks(_id, (currentIndex !== -1 ? 'pending' : 'completed'), this.props.onUpdate)
             setChecked(newChecked);
         }
-
+   
 
         return (
             <List className={classes.root + ` m-auto`}>
                 {(subtasks || []).length ? subtasks.map((task, inx) => {
                     let { todo_id, title, status, created_at } = task
-
                     const labelId = `checkbox-list-label-${inx}`;
-
                     return (
                         <ListItem
                             key={todo_id} role={undefined} dense button onClick={(event) => {
@@ -103,10 +113,28 @@ export default class TodoSubList extends React.Component {
                 <div className="d-flex justify-content-between align-items-center flex-row">
 
                     <Input variantName='standard'
-                        text='New List'
-                        style={{ "& input": { padding: "3px 0 5px" } }} />
+                        text={this.state.newListText}
+                        onUpdate={(val)=>{                       
+                            setListName(val)                           
+                        }}
 
-                    <Add style={
+                        style={{ "& input": { padding: "3px 0 5px" } }} />
+                    <Add 
+
+                    actionAdd={()=>{
+                           
+                            if (listName) {                        
+                                let newTodo = this.dummyAddItem({ title: listName })
+                                let subtasks = this.state.subtasks
+                                let newList = subtasks.concat(newTodo)
+                                this.setState({ subtasks: newList }, () => {
+                                    log('[actionAdd]', 'subtask added')
+                                })
+                            }
+                
+                    }}
+
+                    style={
                         {
                             '& .MuiFab-root': {
                                 width: '34px',
@@ -125,12 +153,12 @@ export default class TodoSubList extends React.Component {
      * @param {*} id 
      * @param {*} status [pending, completed]
      * @param {*} updateBucket is a hoc callback 
+     * @returns {*} `Promise`
      */
     async updateSubtasks(id, status, updateBucket) {
 
         let initallyCompleted = tasksComplete(this.state.subtasks)
-        
-        
+
 
         let subtasks = this.state.subtasks.map(el => {
             if (el.todo_id === id && status === 'completed') el.status = 'completed'
@@ -139,31 +167,23 @@ export default class TodoSubList extends React.Component {
         })
 
         let subsCompleted = tasksComplete(subtasks)
-
-        // if (isFunction(updateBucket) && initallyCompleted && !subsCompleted) {
-        //     await delay(50)
-        //     await updateBucket(this.state.id,'pending','list')
-        // }
-
-        log({subsCompleted,subtasks,id, status})
-
-
+        let defer = sq()
         this.setState({
             subtasks, status: 'completed',
             ...(subsCompleted ? { status: 'completed' } : { status: 'pending' })
         }, () => {
             log('[updateSubtasks][setState][subtasks]', this.state.subtasks)
 
-            if (subsCompleted){
-                if (isFunction(updateBucket) ) updateBucket(this.state.id,'completed','bucket')
+            if (subsCompleted) {
+                if (isFunction(updateBucket)) updateBucket(this.state.id, 'completed', 'bucket')
             }
 
             if (initallyCompleted && !subsCompleted) {
-                if(isFunction(updateBucket) )  updateBucket(this.state.id,'completed','list')
+                if (isFunction(updateBucket)) updateBucket(this.state.id, 'completed', 'list')
             }
-
+            defer.resolve()
         })
-
+        return defer.promise
     }
 
     render() {

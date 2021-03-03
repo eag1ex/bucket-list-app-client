@@ -110,6 +110,7 @@ export default class TodoList extends PureComponent {
      * @param {*} id 
      * @param {*} status [pending, completed]
      * @param {*} origin  [bucket, or > list] 
+     * @returns {*} `Promise`
      */
     async updateAll(id, status, origin = 'bucket') {
 

@@ -21,6 +21,7 @@ class Home extends PureComponent {
   constructor(props, context) {
     super(props);
     this.state = {
+      newBucketTitle:'New bucket'
     }
   }
 
@@ -34,7 +35,13 @@ class Home extends PureComponent {
       <div className="row">   
           <div className="col-8 m-auto">
               <div className="d-flex justify-content-center align-items-center w-50 m-auto">
-                  <Input variantName='outlined' text="New bucket"/><Add actionAdd={this.actionAdd.bind(this)} />
+                  <Input 
+                  onUpdate={()=>{
+                    log('on update')
+                  }}
+                  variantName='outlined' text={this.state.newBucketTitle}/><Add actionAdd={()=>{
+                    this.actionAdd()
+                  }} />
               </div>
           </div>
       </div>
