@@ -11,10 +11,12 @@
     "bootstrap": "^4.6.0",
     "bulma": "^0.8.2",
     "create-react-class": "^15.7.0",
+    "mobx": "^6.1.8",
+    "mobx-react-lite": "^3.2.0",
     "node-sass": "^4.14.1",
     "npm": "^7.6.0",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "react-dom": "^16.14.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
     "uuidv4": "^6.2.6",
@@ -47,6 +49,8 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
+    "@babel/preset-env": "^7.13.9",
     "babel-eslint": "^10.1.0",
     "eslint-plugin-react": "^7.22.0",
     "react-app-rewire-alias": "^1.0.1",

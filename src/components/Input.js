@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import {log} from 'x-utils-es';
+//import {log} from 'x-utils-es';
 
 const useStyles = (opts = {}) => makeStyles((theme) => {
     let o = {

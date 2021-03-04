@@ -4,9 +4,9 @@ import React, { PureComponent } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Input from '@components/Input';
 import Add from '@components/Add';
-import TodoList from '@components/Todo/TodoList';
-import {log} from 'x-utils-es';
 
+import {log} from 'x-utils-es';
+import Todo from '../components/Todos/Todo'
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
@@ -48,7 +48,7 @@ class Home extends PureComponent {
 
       <div className="row">
           <div className="col-8 m-auto">
-                  <TodoList/> 
+                  <Todo/>
           </div>
       </div>
 
