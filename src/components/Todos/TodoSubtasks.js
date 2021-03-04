@@ -10,10 +10,10 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import { BucketList as SubTaskList } from './Models'
-// import { log } from 'x-utils-es';
+import { log } from 'x-utils-es';
 
 import Input from '../Input';
-import Add from '../Add';
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -33,15 +33,13 @@ const SubTaskView = observer(({ todo, inx, onUpdate }) => {
         role={undefined} dense button
         onClick={(event) => {
             event.stopPropagation()
+            todo.toggle()
+            onUpdate(todo) // hoc call to Bucket
         }}>
         <ListItemIcon>
             <Checkbox
                 edge="start"
                 checked={todo.finished}
-                onClick={() => {
-                    todo.toggle()
-                    onUpdate(todo) // hoc call to Bucket
-                }}
                 tabIndex={-1}
                 inputProps={{ 'aria-labelledby': labelId }}
             />
@@ -54,7 +52,7 @@ const SubTaskView = observer(({ todo, inx, onUpdate }) => {
 const SubTasksListView = observer(({ todoList, inx, onUpdate, id }) => {
 
     const classes = useStyles();
-    const [listName, setListName] = React.useState({ text: '' });
+    //const [listName, setListName] = React.useState({ text: '' });
     return (<List className={classes.root + ` m-auto`}>
         {todoList.todos.map(todo => (
             <SubTaskView todo={todo} key={todo.todo_id} inx={inx} onUpdate={onUpdate} id={id} />
@@ -64,25 +62,16 @@ const SubTasksListView = observer(({ todoList, inx, onUpdate, id }) => {
 
             <Input variantName='standard'
                 text='Add List'
-                onUpdate={(val) => {
-                    setListName(val)
+                // onUpdate={(val) => {
+                //     setListName(val)
 
-                }}
-                style={{ "& input": { padding: "3px 0 5px" } }} />
-            <Add
-
-                actionAdd={() => {
-                    if (listName) todoList.addSubTask({ title: listName }, id)
-                }}
-
-                style={
-                    {
-                        '& .MuiFab-root': {
-                            width: '34px',
-                            height: '34px'
-                        }
-                    }
-                } />
+                // }}
+                style={{ "& input": { padding: "3px 0 5px" } }}
+                id={id}
+                add={true}
+                todoList={todoList}
+            />
+           
         </div>
         <div>Tasks left: {todoList.unfinishedTodoCount}</div>
     </List>)

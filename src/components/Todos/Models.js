@@ -256,12 +256,13 @@ class BucketList {
             let todo = new Subtask(dummyItem({ title }))
             let todosIndex = this.todos.length
             this.todos = this.todos.concat(todo)
-
-            if (this.todos.length !== todosIndex) throw (`todo not added, for id:${id}`)
+            if (this.todos.length === todosIndex) throw (`todo not added, for id:${id}`)
+            return true
 
         } catch (err) {
             onerror('[addSubTask]', err)
         }
+        return false
 
     }
 
