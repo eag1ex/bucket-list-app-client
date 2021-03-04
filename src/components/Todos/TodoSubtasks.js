@@ -17,8 +17,8 @@ import Input from '../Input';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        // width: '100%',
-        maxWidth: 360,
+        // width: '100%', 
+      //  maxWidth: 380,
         backgroundColor: theme.palette.background.paper,
     },
 }));
@@ -52,7 +52,7 @@ const SubTaskView = observer(({ todo, inx, onUpdate }) => {
 const SubTasksListView = observer(({ todoList, inx, onUpdate, id }) => {
 
     const classes = useStyles();
-    //const [listName, setListName] = React.useState({ text: '' });
+
     return (<List className={classes.root + ` m-auto`}>
         {todoList.todos.map(todo => (
             <SubTaskView todo={todo} key={todo.todo_id} inx={inx} onUpdate={onUpdate} id={id} />
@@ -62,10 +62,6 @@ const SubTasksListView = observer(({ todoList, inx, onUpdate, id }) => {
 
             <Input variantName='standard'
                 text='Add List'
-                // onUpdate={(val) => {
-                //     setListName(val)
-
-                // }}
                 style={{ "& input": { padding: "3px 0 5px" } }}
                 id={id}
                 add={true}

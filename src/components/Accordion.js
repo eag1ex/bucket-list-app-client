@@ -10,6 +10,9 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 const useStyles = makeStyles({
   root: {
     width: '100%',
+    '& .MuiList-root':{
+     // 'maxWidth':'300px'
+    }
   },
 });
 

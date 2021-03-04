@@ -14,7 +14,7 @@ import TodoSubTasks from './TodoSubtasks';
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-    maxWidth: 360,
+   // maxWidth: 360,
     backgroundColor: theme.palette.background.paper,
   },
 }));
@@ -25,7 +25,7 @@ const BucketView = observer(({ todo }) => {
   if (!todo.finished === false) { } // hack fix
 
   return (
-    <div className="mx-2 d-flex justify-content-center m-auto px-2">
+    <div className="d-flex justify-content-center m-auto px-3">
       <Accordion
         Check={() => (
           <Checkbox

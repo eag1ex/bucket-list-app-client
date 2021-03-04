@@ -47,7 +47,7 @@ class Home extends PureComponent {
       </div>
 
       <div className="row">
-          <div className="col-8 m-auto">
+          <div className="col-5 m-auto">
                   <Todo/>
           </div>
       </div>
