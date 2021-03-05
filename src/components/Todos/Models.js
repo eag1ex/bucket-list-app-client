@@ -1,37 +1,17 @@
 
 import { makeObservable, observable, computed, action, observe, runInAction, configure } from "mobx";
-import { log, onerror,debug } from 'x-utils-es';
+import { log, onerror, debug } from 'x-utils-es';
 import { tasksComplete, tasksPending } from '../../utils';
 import { v4 } from 'uuid';
+
 configure({
     enforceActions: "never"
+    // computedRequiresReaction: true,
+    // reactionRequiresObservable: true,
+    // observableRequiresReaction: true,
+    // disableErrorBoundaries: true,
 })
 
-/*
-// observe changes
-https://mobx.js.org/intercept-and-observe.html
-import { when, makeAutoObservable } from "mobx"
-
-class MyResource {
-    constructor() {
-        makeAutoObservable(this, { dispose: false })
-        when(
-            // Once...
-            () => !this.isVisible,
-            // ... then.
-            () => this.dispose()
-        )
-    }
-
-    get isVisible() {
-        // Indicate whether this item is visible.
-    }
-
-    dispose() {
-        // Clean up some resources.
-    }
-}
-* */
 
 
 class Subtask {
@@ -45,9 +25,7 @@ class Subtask {
 
     constructor({ todo_id, title, status, created_at }) {
 
-
         makeObservable(this, {
-
             todo_id: observable,
             status: observable,
             title: observable,
@@ -65,8 +43,7 @@ class Subtask {
         this.created_at = created_at
 
         observe(this, 'status', change => {
-            log('observe/Subtask/status', change)
-            //console.log(change.type, change.name, "from", change.oldValue, "to", change.object[change.name])
+            log('[subtask]', `is ${change.newValue}`)
         })
 
     }
@@ -92,7 +69,6 @@ class Bucket {
 
     constructor({ id, todo_id, title, status, created_at, subtasks }) {
 
-
         makeObservable(this, {
             id: observable,
             todo_id: observable,
@@ -104,7 +80,7 @@ class Bucket {
             finished: observable,
             toggle: action,
             onUpdate: action,
-        
+
         });
 
         this.id = id;
@@ -112,25 +88,20 @@ class Bucket {
         this.title = title;
         this.status = status;
         this.created_at = created_at
-        this.subtasks = subtasks.map(n => new Subtask(n))
+        this.subtasks = (subtasks || []).length ? subtasks.map(n => new Subtask(n)) : []
 
 
         if (this.status === 'completed') {
 
-            runInAction(() => {
-                this.finished = true
-                this.setSubTasksStatus('completed')
-            })
+            this.finished = true
+            this.setSubTasksStatus('completed')
+
         }
 
-
         observe(this, 'status', change => {
-            log('observe/Bucket/status', change)
             if (!change.oldValue) {
                 if (change.newValue === 'pending' || change.newValue === 'completed') {
-                    runInAction(() => {
-                        this.setSubTasksStatus(change.newValue)
-                    })
+                    this.setSubTasksStatus(change.newValue)
                 }
             }
         })
@@ -142,8 +113,7 @@ class Bucket {
                 runInAction(() => {
                     this.status = 'completed'
                     this.finished = true
-                    log('[tasksPending]', 'bucket is complete')
-
+                    log('[tasksComleted]', 'bucket is complete')
                 })
                 return
             }
@@ -187,29 +157,33 @@ class Bucket {
 
     setSubTasksStatus(byStatus) {
         if (byStatus === 'completed' || byStatus === 'pending') {
-            this.subtasks = this.subtasks.map(n => {
-                n.status = byStatus
-                n.finished = byStatus === 'completed' ? true : false
-                return n
+            runInAction(() => {
+                this.subtasks = this.subtasks.map(n => {
+                    n.status = byStatus
+                    n.finished = byStatus === 'completed' ? true : false
+                    return n
+                })
             })
         }
     }
 
     updateSubTasks(task) {
+        runInAction(() => {
+            this.subtasks = this.subtasks.map((el) => {
+                if (el.todo_id === task.todo_id) {
+                    el = task
+                    el.finished = el.status === 'completed' ? true : false
 
-        this.subtasks = this.subtasks.map((el) => {
-            if (el.todo_id === task.todo_id) {
-                el = task
-                el.finished = el.status === 'completed' ? true : false
-
-            }
-            return el
+                }
+                return el
+            })
         })
+
     }
 }
 
 
-class BucketList {
+class BucketStore {
     todos = [];
     state = "pending" // "pending", "update" "ready" or "error"
     id = ''
@@ -220,16 +194,17 @@ class BucketList {
     /**
      * 
      * @param {*} todos 
-     * @param `{id, entity}` id is only availab on entity='SubTaskList'
+     * @param `{id, entity}` id is only available on entity='SubTaskStore'
      */
-    constructor(todos, {id, entity}) {
+    constructor(todos, { id, entity }) {
         makeObservable(this, {
             id: observable,
-            state:observable,
+            state: observable,
             todos: observable,
             unfinishedTodoCount: computed,
             // onUpdate:action
-            addBucketList:action
+            addNewBucket: action,
+            addNewSubTask: action
         });
 
         this.entity = entity
@@ -238,34 +213,64 @@ class BucketList {
 
         observe(this, 'todos', change => {
             log(`[${this.entity}][todos]`, change.newValue)
-            //console.log(change.type, change.name, "from", change.oldValue, "to", change.object[change.name])
+
         })
 
         observe(this, 'state', change => {
             log(`[${this.entity}][state]`, change.newValue)
-            //console.log(change.type, change.name, "from", change.oldValue, "to", change.object[change.name])
         })
-        log(`[entity: ${this.entity}] /todos`,this.todos)      
+
+        log(`[entity: ${this.entity}] /todos`, this.todos)
     }
 
     /**
      * 
-     * @param {*} bucketList
-     * @returns number of addd buckets 
+     * @returns number of added buckets 
      */
-    addBucketList(bucketList){
-        bucketList.forEach((buc,inx)=>{
-            this.todos = new Bucket(buc)
-            debug('[addBucketList][added]',inx)
-        })
+    addNewBucket({ title }) {
 
-        return this.todos.length
+        if (this.entity !== 'BucketStore') {
+            throw (`not allowed performing task/addNewBucket on entity:${this.entity}`)
+        }
+
+        try {
+
+            if (!title) throw ('Bucket not added, {title} missing')
+
+            const dummyItem = ({ title }) => {
+                return {
+                    id: v4(),
+                    title,
+                    status: 'pending', // [pending/completed]
+                    created_at: '',
+                    subtasks: []
+                }
+            }
+
+            let bucket = new Bucket(dummyItem({ title }))
+
+            runInAction(() => {
+                // add another bucket          
+                this.todos.push(bucket)
+            })
+
+            return this.todos.length
+
+        } catch (err) {
+            onerror(err)
+        }
+
+        return 0
     }
 
 
-    addSubTask({ title }, id) {
+    /**
+     * 
+     * @returns number of added subTaks 
+     */
+    addNewSubTask({ title }, id) {
 
-        if(this.entity !=='SubTaskList'){
+        if (this.entity !== 'SubTaskStore') {
             throw (`not allowed performing task/addSubTask on entity:${this.entity}`)
         }
 
@@ -282,23 +287,25 @@ class BucketList {
                 }
             }
 
-            if (this.id !== id) throw (`no BucketList not found for id:${id}`)
+            if (this.id !== id) throw (`no BucketStore not found for id:${id}`)
 
             let todo = new Subtask(dummyItem({ title }))
-            let todosIndex = this.todos.length
-            this.todos = this.todos.concat(todo)
-            if (this.todos.length === todosIndex) throw (`todo not added, for id:${id}`)
-            return true
+            // add another subtask
+            runInAction(() => {
+                this.todos.push(todo)
+            })
+
+            return this.todos.length
 
         } catch (err) {
             onerror('[addSubTask]', err)
         }
-        return false
+        return 0
 
     }
 
 }
 
-export { BucketList }
+export { BucketStore }
 export { Bucket }
 export { Subtask }

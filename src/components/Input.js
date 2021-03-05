@@ -1,7 +1,9 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
+import { action } from 'mobx'
 import Add from './Add';
+
 //import {log} from 'x-utils-es';
 
 const useStyles = (opts = {}) => makeStyles((theme) => {
@@ -17,18 +19,18 @@ const useStyles = (opts = {}) => makeStyles((theme) => {
   return o
 })()
 
-export default function BasicTextFields({ add, text, style, variantName = "outlined", value, onUpdate, id, todoList }) {
+export default function BasicTextFields({ add, text, style, variantName = "outlined", value, onUpdate, id }) {
 
   const classes = useStyles({ style });
-  const [listName, setListName] = React.useState({ text: '' });
+  const [inputName, setInputName] = React.useState('');
 
   return (
     <form
-
+      value={inputName}
       onChange={(event) => {
         let value = (event.target.value || '').trim()
         if (add) {
-          setListName(value)
+          setInputName(value)
           return
         }
 
@@ -40,6 +42,7 @@ export default function BasicTextFields({ add, text, style, variantName = "outli
       onSubmit={(event) => {
         event.stopPropagation()
         event.preventDefault()
+        setInputName('')
         return false
       }}
 
@@ -49,20 +52,27 @@ export default function BasicTextFields({ add, text, style, variantName = "outli
         {add ? (
           <div className="input-group mb-3 mr-1">
             <TextField
+              value={inputName}
               className="outlined-basic form-control " label={text} variant={variantName} />
             <Add
-          
+
               actionAdd={() => {
-                let noValue = () => {
-                  if (!listName) return true
-                  if ((listName || {}).text !== undefined) return true
-                  else return false
+
+                // this is for mobxstore<hook> to entity/BucketStore handler
+                if (add.mobxstore) {
+                  const mobxstore = add.mobxstore
+
+                  mobxstore.asyncBucketStore().then(
+                    action("asyncBucketStoreSuccess", bucketStore => {
+                      if (bucketStore.addNewBucket({ title: inputName })) setInputName('')
+                    }))
+
                 }
 
-                if (!noValue()) {
-
-                  if (todoList.addSubTask({ title: listName }, id)) {
-                    setListName('')
+                // this is for entity/SubTaskStore handler
+                if (add.todoList) {
+                  if (add.todoList.addNewSubTask({ title: inputName }, id)) {
+                    setInputName('')
                   }
                 }
               }}
@@ -72,13 +82,16 @@ export default function BasicTextFields({ add, text, style, variantName = "outli
                   '& .MuiFab-root': {
                     width: '34px',
                     height: '34px',
-                    
+
                   }
                 }
               } />
           </div>
-        ):( <TextField
-            className="outlined-basic" label={text} variant={variantName} />)}
+        ) : (<TextField
+              value={inputName}
+              className="outlined-basic"
+              label={text}
+              variant={variantName} />)}
       </React.Fragment>
 
     </form>

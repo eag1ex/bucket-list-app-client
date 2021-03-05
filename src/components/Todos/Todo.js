@@ -2,11 +2,12 @@ import React, { useState } from "react";
 
 import { observer } from "mobx-react-lite";
 import Message from '../Messages';
-import { Bucket, BucketList } from './Models'
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { Bucket, BucketStore } from './Models'
 import { makeStyles } from '@material-ui/core/styles';
 import Accordion from './Accordion'
 import List from '@material-ui/core/List';
-import { todoList as todoData } from '../../data'
+import { todoList as todoData } from '../../store/dummy.data'
 import Checkbox from '@material-ui/core/Checkbox';
 import TodoSubTasks from './TodoSubtasks';
 import { log,copy } from 'x-utils-es';
@@ -21,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 const BucketView = observer(({ todo }) => {
+  // eslint-disable-next-line no-empty
   if (!todo.finished === false) { } // hack fix
 
   return (
@@ -55,21 +57,16 @@ const BucketListView = observer(({ todoList,mobxstore }) => {
 });
 
 
-const bucketStore = new BucketList(copy(todoData).map(n => new Bucket(n)),{entity:'BucketList'});
-const Todo = (props) => {
-  console.log('Todo/props', props.mobxstore)
-  // TODO add call back action/hook to add store item to bucket list
-  return (<BucketListView todoList={bucketStore} mobxstore={props.mobxstore} />)
-}
-const withTodo =  (TodoComp)=>{
-  const Hoc = observer(({ mobxstore }) => {      
-    console.log('withTodo/mobxstore',mobxstore)
+const bucketStore = new BucketStore(copy(todoData).map(n => new Bucket(n)),{entity:'BucketStore'});
 
-    //  if(mobxstore.state==='ready') return (<Component mobxstore={mobxstore} />)
-     // else return (<CircularProgress color="inherit" size={20} />)
-     return (<TodoComp mobxstore={mobxstore} />)
-  })
-  return Hoc
+export default (props) => {
+  const { mobxstore } = props
+  if (mobxstore.state === 'ready') {
+    mobxstore.bucketStore.self =  bucketStore 
+    mobxstore.bucketStore.onReady =1
+    
+    return (<BucketListView todoList={bucketStore} mobxstore={props.mobxstore} />)
+  }
+  else return (<CircularProgress color="inherit" size={20} />)
 }
 
-export default withTodo(Todo)

@@ -1,16 +1,14 @@
 import React from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import {theme} from "@scss/material.theme"
-import { observer } from "mobx-react-lite";
+//import { observer } from "mobx-react-lite";
 import { ThemeProvider } from '@material-ui/core/styles';
-import MobXStore from './services/MobxStore.service'
+import MobXStore from './store/MobxStore.store'
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 
+const mobxstore = new MobXStore()
 function App() {
-  const mobxstore = new MobXStore()
-
-
 
   return (
     <BrowserRouter>
@@ -20,10 +18,9 @@ function App() {
       <Navbar/>
       <div className="container-fluid mt-2">
         <Switch>
-          <Route exact path="/">
+          <Route exact path="/">    
             <Home mobxstore={mobxstore} />      
-          </Route>
-        
+          </Route>    
         </Switch>
       </div>
 
@@ -31,8 +28,6 @@ function App() {
     </BrowserRouter>
   );
 }
-
-
 
 export default App;
 

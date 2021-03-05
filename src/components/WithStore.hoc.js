@@ -1,10 +1,10 @@
-import React,{useState} from "react";
+import React from "react";
 import { observer } from "mobx-react-lite";
 //import {log} from 'x-utils-es'
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 // import Message from ''
-const WithStore =  (Component)=>{
+const withStoreReady =  (Component)=>{
      
     const Hoc = observer(({ mobxstore }) => {      
         if(mobxstore.state==='ready') return (<Component mobxstore={mobxstore} />)
@@ -13,5 +13,5 @@ const WithStore =  (Component)=>{
     return Hoc
 }
 
-export default WithStore
+export default withStoreReady
 

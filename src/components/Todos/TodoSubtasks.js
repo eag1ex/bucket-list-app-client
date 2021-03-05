@@ -9,7 +9,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 //import CircularProgress from '@material-ui/core/CircularProgress';
 import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
-import { BucketList as SubTaskList } from './Models'
+import { BucketStore as SubTaskStore } from './Models'
 import { log } from 'x-utils-es';
 
 import Input from '../Input';
@@ -65,8 +65,7 @@ const SubTasksListView = observer(({ todoList, inx, onUpdate, id }) => {
                 text='Add List'
                 style={{ "& input": { padding: "3px 0 5px" } }}
                 id={id}
-                add={true}
-                todoList={todoList}
+                add={{todoList}} // tells the input to add <Add/> component
             />
            
         </div>
@@ -76,10 +75,8 @@ const SubTasksListView = observer(({ todoList, inx, onUpdate, id }) => {
 
 export default (props) => {
     const { subtasks, id, onUpdate } = props
-    const store = new SubTaskList(subtasks, {id,entity:'SubTaskList'});
-    return (<React.Fragment>
-        { <SubTasksListView todoList={store} id={id} onUpdate={onUpdate} />}
-    </React.Fragment>)
+    const store = new SubTaskStore(subtasks, {id,entity:'SubTaskStore'});
+    return (<SubTasksListView todoList={store} id={id} onUpdate={onUpdate} />)
 }
 
 

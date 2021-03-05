@@ -1,10 +1,8 @@
 import "@scss/pages/home.component.scss"
-import WithStore from '../services/WithStore.hoc';
+import WithStoreReady from '../components/WithStore.hoc';
 import React from 'react';
 //import { makeStyles } from '@material-ui/core/styles';
 import Input from '@components/Input';
-import Add from '@components/Add';
-
 import { log } from 'x-utils-es';
 import Todo from '../components/Todos/Todo';
 
@@ -20,11 +18,7 @@ import Todo from '../components/Todos/Todo';
 
 
 function Home(props){
-
   const {mobxstore} = props 
-  const actionAdd= (data)=> {
-    log('actionAdd', data)
-  }
 
   return (
     <>
@@ -32,13 +26,10 @@ function Home(props){
         <div className="col-8 m-auto">
           <div className="d-flex justify-content-center align-items-center w-50 m-auto">
             <Input
-              onUpdate={() => {
-                log('on update')
-              }}
-              variantName='outlined' text='New bucket' /><Add actionAdd={() => {
-                actionAdd()
-                mobxstore.addBucket('add new wbucket')
-              }} />
+              variantName='outlined' text='New bucket' 
+              add={ {mobxstore} }
+              />
+   
           </div>
         </div>
       </div>
@@ -52,7 +43,7 @@ function Home(props){
   );
 }
 
-export default WithStore(Home);
+export default WithStoreReady(Home);
 
 
 

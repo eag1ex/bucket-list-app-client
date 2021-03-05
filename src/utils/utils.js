@@ -22,4 +22,3 @@ export const tasksComplete = (tasks=[])=>{
 export const tasksPending= (tasks=[])=>{
     return tasks.filter(n=>n.status==='pending').length===tasks.length && tasks.length>0
 }
-

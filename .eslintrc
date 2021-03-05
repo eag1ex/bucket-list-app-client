@@ -7,7 +7,8 @@
     "react/prop-types": 0,
     "react/display-name":0,
     "no-undef":"warn",
-    "no-unused-vars":"warn"
+    "no-unused-vars":"warn",
+    "no-throw-literal":"off"
   },
   "plugins": [
     "react"
