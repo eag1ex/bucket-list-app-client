@@ -1,6 +1,6 @@
 
 import { makeObservable, observable, computed, action, observe, runInAction, configure } from "mobx";
-import { log, onerror } from 'x-utils-es';
+import { log, onerror,debug } from 'x-utils-es';
 import { tasksComplete, tasksPending } from '../../utils';
 import { v4 } from 'uuid';
 configure({
@@ -103,7 +103,8 @@ class Bucket {
             // internal
             finished: observable,
             toggle: action,
-            onUpdate: action
+            onUpdate: action,
+        
         });
 
         this.id = id;
@@ -170,7 +171,6 @@ class Bucket {
 
             //console.log(change.type, change.name, "from", change.oldValue, "to", change.object[change.name])
         })
-
     }
 
     toggle() {
@@ -203,40 +203,71 @@ class Bucket {
                 el.finished = el.status === 'completed' ? true : false
 
             }
-
             return el
         })
     }
 }
 
 
-
 class BucketList {
     todos = [];
+    state = "pending" // "pending", "update" "ready" or "error"
     id = ''
     get unfinishedTodoCount() {
         return this.todos.filter(todo => !todo.finished).length;
     }
 
-    constructor(todos, id) {
+    /**
+     * 
+     * @param {*} todos 
+     * @param `{id, entity}` id is only availab on entity='SubTaskList'
+     */
+    constructor(todos, {id, entity}) {
         makeObservable(this, {
             id: observable,
+            state:observable,
             todos: observable,
             unfinishedTodoCount: computed,
             // onUpdate:action
+            addBucketList:action
         });
 
+        this.entity = entity
         this.id = id
         this.todos = todos;
+
         observe(this, 'todos', change => {
-            log('[todos]', change.newValue)
+            log(`[${this.entity}][todos]`, change.newValue)
             //console.log(change.type, change.name, "from", change.oldValue, "to", change.object[change.name])
         })
+
+        observe(this, 'state', change => {
+            log(`[${this.entity}][state]`, change.newValue)
+            //console.log(change.type, change.name, "from", change.oldValue, "to", change.object[change.name])
+        })
+        log(`[entity: ${this.entity}] /todos`,this.todos)      
+    }
+
+    /**
+     * 
+     * @param {*} bucketList
+     * @returns number of addd buckets 
+     */
+    addBucketList(bucketList){
+        bucketList.forEach((buc,inx)=>{
+            this.todos = new Bucket(buc)
+            debug('[addBucketList][added]',inx)
+        })
+
+        return this.todos.length
     }
 
 
     addSubTask({ title }, id) {
 
+        if(this.entity !=='SubTaskList'){
+            throw (`not allowed performing task/addSubTask on entity:${this.entity}`)
+        }
 
         try {
             if (!title) throw ('subtask not added, {title} missing')

@@ -26,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
 
 const SubTaskView = observer(({ todo, inx, onUpdate }) => {
     // let { todo_id, title, status, created_at } = todo;
+    // eslint-disable-next-line no-empty
     if (todo.finished) { }
     const labelId = `checkbox-list-label-${inx}`;
     return (<ListItem
@@ -73,10 +74,9 @@ const SubTasksListView = observer(({ todoList, inx, onUpdate, id }) => {
     </List>)
 });
 
-
 export default (props) => {
     const { subtasks, id, onUpdate } = props
-    const store = new SubTaskList(subtasks, id);
+    const store = new SubTaskList(subtasks, {id,entity:'SubTaskList'});
     return (<React.Fragment>
         { <SubTasksListView todoList={store} id={id} onUpdate={onUpdate} />}
     </React.Fragment>)
