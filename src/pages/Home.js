@@ -1,25 +1,17 @@
 import "@scss/pages/home.component.scss"
 import WithStoreReady from '../components/WithStore.hoc';
 import React from 'react';
-//import { makeStyles } from '@material-ui/core/styles';
+import { useParams } from "react-router-dom";
 import Input from '@components/Input';
-import { log } from 'x-utils-es';
 import Todo from '../components/Todos/Todo';
 
-// const useStyles = makeStyles((theme) => ({
-//   root: {
-//     width: '100%',
-//   },
-//   heading: {
-//     fontSize: theme.typography.pxToRem(15),
-//     fontWeight: theme.typography.fontWeightRegular,
-//   },
-// }));
 
 
 function Home(props){
   const {mobxstore} = props 
-
+  const { user } = useParams();
+  console.log('you are logged in as: ',`user: ${user}`)
+  
   return (
     <>
       <div className="row">

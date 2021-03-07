@@ -3,10 +3,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-
+import { withRouter } from "react-router-dom";
+import { delay } from 'x-utils-es/umd'
+import Chip from '@material-ui/core/Chip';
+import TagFacesIcon from '@material-ui/icons/TagFaces';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,7 +22,34 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ButtonAppBar() {
+function ButtonAppBar({ history }) {
+
+  const [userName, setUset] = React.useState('');
+
+  const fakeUserSession = () => {
+    const defaultUser = `oozou01`
+    const wait = 2000
+
+    const setUserSession = () => {
+      return !!localStorage.getItem("user");
+    }
+
+    //   localStorage.removeItem("token");
+    if (!setUserSession()) {
+      history.push(`/`); // loading page
+    }
+
+    if (setUserSession()) {
+      delay(wait).then(() => {
+        localStorage.setItem('user', defaultUser)
+        history.push(`/profile/${defaultUser}`);
+        setUset(defaultUser)
+      })
+    }
+  };
+
+  fakeUserSession()
+
   const classes = useStyles();
 
   return (
@@ -33,9 +62,20 @@ export default function ButtonAppBar() {
           <Typography variant="h6" className={classes.title}>
             Bucket List
           </Typography>
-          <Button color="inherit">Login</Button>
+          {userName ? (<Chip
+            avatar={<TagFacesIcon />}
+            className="nav-avatar"
+            label={userName}
+            clickable
+            color="white"
+
+            variant="outlined"
+          />) : null}
+
         </Toolbar>
       </AppBar>
     </div>
   );
 }
+
+export default withRouter(ButtonAppBar)

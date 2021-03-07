@@ -1,6 +1,6 @@
-import { action, makeAutoObservable,observable,makeObservable,runInAction,observe } from "mobx"
-import {log,isFunction,delay,onerror,sq} from 'x-utils-es'
-import {BucketStore} from '../components/Todos/Models'
+import { action, makeAutoObservable, observable, makeObservable, runInAction, observe } from "mobx"
+import { log, isFunction, delay, onerror, sq } from 'x-utils-es'
+import { BucketStore } from '../components/Todos/Models'
 // import { todoList as todoData } from '../../data'
 
 export default class MobXStore {
@@ -9,34 +9,34 @@ export default class MobXStore {
     dispatchValue = null
 
     bucketStore = {
-        defer:sq(), // to be safe ew can check it realy there
-        onReady:0, // 0 or 1
-        self:null
+        defer: sq(), // to be safe ew can check it realy there
+        onReady: 0, // 0 or 1
+        self: null
     }
-    
+
     constructor() {
         // makeAutoObservable(this)
-      
+
         makeObservable(this, {
 
             todoData: observable,
             state: observable,
-          //  toggle: action,
-            fetchTodo:action,
-            dispatchValue:observable,
-            dispatch:action,
-            addBucket:action,
-           // onStateUpdate:action
+            //  toggle: action,
+            fetchTodo: action,
+            dispatchValue: observable,
+            dispatch: action,
+            addBucket: action,
+            // onStateUpdate:action
         });
 
         makeObservable(this.bucketStore, {
-            onReady:observable
+            onReady: observable
         })
 
         this.onStateUpdate_cb = null
 
         runInAction(() => {
-            this.fetchTodo()         
+            this.fetchTodo()
         })
 
         // observe(this, 'state', change => {
@@ -53,11 +53,11 @@ export default class MobXStore {
                 this.bucketStore.defer.resolve(true)
                 log('observe/bucketStore/onReady', change, this.bucketStore.self)
             }
-           
+
         })
 
     }
-  
+
     /**
      *
      *  gain access to Toto/BucketStore class instance after it was laoded
@@ -79,26 +79,23 @@ export default class MobXStore {
         }
     }
 
-    addBucket(data){
-        log('[addBucket]',data)
+    addBucket(data) {
+        log('[addBucket]', data)
     }
 
-    dispatch(data){     
+    dispatch(data) {
         this.dispatchValue = data
-        log('got data from dispatch',data, this.dispatchValue)
+        log('got data from dispatch', data, this.dispatchValue)
     }
 
     async fetchTodo() {
         this.todoData = [];
         this.state = "pending"
         await delay(2000) // fake loading
-        import('./dummy.data').then( 
+        import('./dummy.data').then(
             action("fetchSuccess", todos => {
-                //const filteredProjects = somePreprocessing(projects)
                 this.todoData = todos.todoList
                 this.state = "ready"
-
-                log('got some data',todos)
             }),
             action("fetchError", error => {
                 this.state = "error"

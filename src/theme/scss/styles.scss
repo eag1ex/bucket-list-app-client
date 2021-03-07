@@ -19,4 +19,13 @@ html {
     color: $body-color;
     margin-bottom: 0;
   }
-  
+
+  header{
+    .nav-avatar{
+      border-color:$white1;
+      color:$white1;
+      svg{
+        color:$white1!important;
+      }
+    }
+  }

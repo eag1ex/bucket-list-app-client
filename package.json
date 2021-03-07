@@ -10,8 +10,6 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "bootstrap": "^4.6.0",
-    "bulma": "^0.8.2",
-    "create-react-class": "^15.7.0",
     "mobx": "^6.1.8",
     "mobx-react-lite": "^3.2.0",
     "node-sass": "^4.14.1",
@@ -35,7 +33,7 @@
     "npm": "~6.9.0"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": ["react-app"]
   },
   "browserslist": {
     "production": [
@@ -56,18 +54,5 @@
     "eslint-plugin-react": "^7.22.0",
     "react-app-rewire-alias": "^1.0.1",
     "react-app-rewired": "^2.1.8"
-  },
-  "jest": {
-    "moduleDirectories": [
-      ".",
-      "src",
-      "node_modules"
-    ],
-    "moduleNameMapper": {
-      "^assets(.*)$": "<rootDir>/src/assets/$1",
-      "^components(.*)$": "<rootDir>/src/components/$1",
-      "^pages(.*)$": "<rootDir>/src/pages/$1",
-      "^scss": "<rootDir>/src/theme/scss/$1"
-    }
   }
 }

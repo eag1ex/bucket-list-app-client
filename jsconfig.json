@@ -9,5 +9,6 @@
         "@scss":["src/theme/scss"],
         "@utils":["src/utils"]
       }
-    }
+    },
+    "include": ["src"]
   }

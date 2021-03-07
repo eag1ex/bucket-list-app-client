@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { observer } from "mobx-react-lite";
-import Message from '../Messages';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Bucket, BucketStore } from './Models'
 import { makeStyles } from '@material-ui/core/styles';
@@ -10,7 +9,7 @@ import List from '@material-ui/core/List';
 import { todoList as todoData } from '../../store/dummy.data'
 import Checkbox from '@material-ui/core/Checkbox';
 import TodoSubTasks from './TodoSubtasks';
-import { log,copy } from 'x-utils-es';
+import { copy } from 'x-utils-es';
 
 const useStyles = makeStyles((theme) => ({
   root: {
