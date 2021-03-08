@@ -5,7 +5,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-import { withRouter } from "react-router-dom";
 import { delay } from 'x-utils-es/umd'
 import Chip from '@material-ui/core/Chip';
 import TagFacesIcon from '@material-ui/icons/TagFaces';
@@ -22,34 +21,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ButtonAppBar({ history }) {
+function ButtonAppBar() {
 
-  const [userName, setUset] = React.useState('');
+  const [userName, setUser] = React.useState('');
 
-  const fakeUserSession = () => {
-    const defaultUser = `oozou01`
-    const wait = 2000
-
-    const setUserSession = () => {
-      return !!localStorage.getItem("user");
-    }
-
-    //   localStorage.removeItem("token");
-    if (!setUserSession()) {
-      history.push(`/`); // loading page
-    }
-
-    if (setUserSession()) {
-      delay(wait).then(() => {
-        localStorage.setItem('user', defaultUser)
-        history.push(`/profile/${defaultUser}`);
-        setUset(defaultUser)
-      })
-    }
-  };
-
-  fakeUserSession()
-
+  // assign fake user 
+  const defaultUser = `oozou01`
+  delay(3000).then(()=>{
+    setUser(defaultUser)
+  })
+  
   const classes = useStyles();
 
   return (
@@ -67,8 +48,6 @@ function ButtonAppBar({ history }) {
             className="nav-avatar"
             label={userName}
             clickable
-            color="white"
-
             variant="outlined"
           />) : null}
 
@@ -78,4 +57,5 @@ function ButtonAppBar({ history }) {
   );
 }
 
-export default withRouter(ButtonAppBar)
+export default ButtonAppBar
+

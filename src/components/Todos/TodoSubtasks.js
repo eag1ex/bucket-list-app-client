@@ -2,15 +2,14 @@
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { observer } from "mobx-react-lite";
-
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-//import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import { BucketStore as SubTaskStore } from './Models'
-import { log } from 'x-utils-es';
+import Message from '../Messages'
 
 import Input from '../Input';
 
@@ -73,10 +72,15 @@ const SubTasksListView = observer(({ todoList, inx, onUpdate, id }) => {
     </List>)
 });
 
+
 export default (props) => {
     const { subtasks, id, onUpdate } = props
-    const store = new SubTaskStore(subtasks, {id,entity:'SubTaskStore'});
-    return (<SubTasksListView todoList={store} id={id} onUpdate={onUpdate} />)
+    const store = new SubTaskStore({ id, entity: 'SubTaskStore' });
+    store.init(subtasks)
+
+    if (store.state === 'ready') return (<SubTasksListView todoList={store} id={id} onUpdate={onUpdate} />)
+    if (store.state === 'error') return (<Message type='error' value='No data for Subtasks' />)
+    else return (<CircularProgress color="inherit" size={20} />)
 }
 
 

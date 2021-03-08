@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter, Switch, Route,Redirect } from "react-router-dom";
 import { theme } from "@scss/material.theme"
 //import { observer } from "mobx-react-lite";
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -8,7 +8,7 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Message from './components/Messages'
 import CircularProgress from '@material-ui/core/CircularProgress';
-
+import { log } from 'x-utils-es';
 const mobxstore = new MobXStore()
 function App() {
 
@@ -20,11 +20,10 @@ function App() {
         <div className="container-fluid mt-2">
 
           <Switch>
-            <Route exact path="/">
-              <React.Fragment>
-                <CircularProgress color="inherit" size={20} />
-              </React.Fragment>
-            </Route>
+              <Route exact path="/" render={(props) => (
+                  <Redirect to="/profile/oozou"/>
+              )}/>
+      
           </Switch>
 
           <Switch>
@@ -34,11 +33,10 @@ function App() {
           </Switch>
           
           <Switch>
-            <Route exact path="/error">
-              <React.Fragment>
-                {(<div><Message type='error' message='Invalid session, user not found' /></div>)}
-              </React.Fragment>
-            </Route>
+            <Route exact path="/error" render={(props)=>{          
+               return (<Message type='error' value='Ups something went wrong' />)
+            }}/>
+                     
           </Switch>
 
         </div>
@@ -51,3 +49,12 @@ function App() {
 
 export default App;
 
+
+
+/*
+   <React.Fragment>
+              <div className="d-flex justify-content-center align-items-center m-5">
+                  <CircularProgress color="inherit" size={20} />
+              </div>            
+              </React.Fragment>
+* */

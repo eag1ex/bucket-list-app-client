@@ -6,10 +6,10 @@ import { Bucket, BucketStore } from './Models'
 import { makeStyles } from '@material-ui/core/styles';
 import Accordion from './Accordion'
 import List from '@material-ui/core/List';
-import { todoList as todoData } from '../../store/dummy.data'
+// import { todoList as todoData } from '../../store/dummy.data' // initial dummy data
 import Checkbox from '@material-ui/core/Checkbox';
 import TodoSubTasks from './TodoSubtasks';
-import { copy } from 'x-utils-es';
+import Message from '../Messages'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -56,16 +56,32 @@ const BucketListView = observer(({ todoList,mobxstore }) => {
 });
 
 
-const bucketStore = new BucketStore(copy(todoData).map(n => new Bucket(n)),{entity:'BucketStore'});
+const bucketStore = new BucketStore(/*todoData.map(n => new Bucket(n),*/{entity:'BucketStore'});
 
 export default (props) => {
   const { mobxstore } = props
+
   if (mobxstore.state === 'ready') {
-    mobxstore.bucketStore.self =  bucketStore 
-    mobxstore.bucketStore.onReady =1
-    
-    return (<BucketListView todoList={bucketStore} mobxstore={props.mobxstore} />)
+
+    mobxstore.bucketStore.self = bucketStore
+    mobxstore.bucketStore.onReady = 1
+
+    // NOTE adding store dataList to each Bucket model via BucketStore
+    let todoData = (mobxstore.todoData || [])
+    bucketStore.init(todoData)
+
+    if (bucketStore.state === 'ready') {
+      return (<BucketListView todoList={bucketStore} mobxstore={props.mobxstore} />)
+    }
+
+    if (bucketStore.state === 'error') {
+      return (<Message type='error' value='No data for Bucket Store'/>)
+    }
+    else {
+      return (<CircularProgress color="inherit" size={20} />)
+    }
   }
+
   else return (<CircularProgress color="inherit" size={20} />)
 }
 

@@ -28,7 +28,7 @@ export default function BasicTextFields({ add, text, style, variantName = "outli
     <form
       value={inputName}
       onChange={(event) => {
-        let value = (event.target.value || '').trim()
+        let value = (event.target.value || '')
         if (add) {
           setInputName(value)
           return
@@ -61,12 +61,7 @@ export default function BasicTextFields({ add, text, style, variantName = "outli
                 // this is for mobxstore<hook> to entity/BucketStore handler
                 if (add.mobxstore) {
                   const mobxstore = add.mobxstore
-
-                  mobxstore.asyncBucketStore().then(
-                    action("asyncBucketStoreSuccess", bucketStore => {
-                      if (bucketStore.addNewBucket({ title: inputName })) setInputName('')
-                    }))
-
+                  mobxstore.addBucket({ title: inputName }).then(()=>setInputName(''))            
                 }
 
                 // this is for entity/SubTaskStore handler

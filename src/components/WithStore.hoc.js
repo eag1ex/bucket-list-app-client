@@ -4,10 +4,12 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Message from './Messages'
 
 const withStoreReady = (Component) => {
+    
     const Hoc = observer(({ mobxstore }) => {
-        if (mobxstore.state === 'error') return (<Message type='error' message='No bucket data availabe' />)
+
+        if (mobxstore.state === 'error') return (<Message type='error' value='No data from server' />) 
         if (mobxstore.state === 'ready') return (<Component mobxstore={mobxstore} />)
-        else return (<CircularProgress color="inherit" size={20} />)
+        else return (<div className="d-flex justify-content-center align-items-center m-5"><CircularProgress color="inherit" size={20} /></div>)
     })
     return Hoc
 }

@@ -1,5 +1,5 @@
 import "@scss/pages/home.component.scss"
-import WithStoreReady from '../components/WithStore.hoc';
+import withStoreReady from '../components/withStore.hoc';
 import React from 'react';
 import { useParams } from "react-router-dom";
 import Input from '@components/Input';
@@ -10,7 +10,7 @@ import Todo from '../components/Todos/Todo';
 function Home(props){
   const {mobxstore} = props 
   const { user } = useParams();
-  console.log('you are logged in as: ',`user: ${user}`)
+  // console.log('you are logged in as: ',`user: ${user}`)
   
   return (
     <>
@@ -35,7 +35,7 @@ function Home(props){
   );
 }
 
-export default WithStoreReady(Home);
+export default withStoreReady(Home)
 
 
 

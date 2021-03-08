@@ -1,6 +1,6 @@
 
 
-import {  warn } from 'x-utils-es'
+import {  warn,isObject } from 'x-utils-es'
 
 /**
  * 
@@ -21,4 +21,21 @@ export const tasksComplete = (tasks=[])=>{
 
 export const tasksPending= (tasks=[])=>{
     return tasks.filter(n=>n.status==='pending').length===tasks.length && tasks.length>0
+}
+
+
+/**
+ * fetch handler if status error reject response
+ * @param {*} response 
+ */
+export const fetchHandler = async (response) => {
+    if (response.ok) return response.json()
+    else {
+
+        let resp = await response.json() // {message,code,error}
+        // if our server is up we know what to expect, else can return empty string
+        if (isObject(resp)) {
+            return Promise.reject(resp.message)
+        } else Promise.reject(resp || "HTTP-Error: " + resp.status)
+    }
 }
