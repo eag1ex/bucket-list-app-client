@@ -39,3 +39,17 @@ export const fetchHandler = async (response) => {
         } else Promise.reject(resp || "HTTP-Error: " + resp.status)
     }
 }
+
+/**
+ * Update original with new data
+ * @param {*} todo data to update with
+ * @param {*} source original 
+ * @returns `original` modified
+ */
+export const updateTodoValues = (todo={}, source)=>{
+
+    for (let [k, val] of Object.entries(todo).values()) {
+        if (source[k]) source[k] = val
+    }
+    return source
+}

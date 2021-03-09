@@ -19,7 +19,7 @@ const useStyles = (opts = {}) => makeStyles((theme) => {
   return o
 })()
 
-export default function BasicTextFields({ add, text, style, variantName = "outlined", value, onUpdate, id }) {
+export default function BasicTextFields({ entity,add, childStore, text, style, variantName = "outlined", value, onUpdate, id }) {
 
   const classes = useStyles({ style });
   const [inputName, setInputName] = React.useState('');
@@ -29,20 +29,22 @@ export default function BasicTextFields({ add, text, style, variantName = "outli
       value={inputName}
       onChange={(event) => {
         let value = (event.target.value || '')
-        if (add) {
-          setInputName(value)
-          return
-        }
-
-        if (!onUpdate) return;
-        onUpdate(value)
-
+       
+        if (onUpdate) onUpdate({value},id,entity,'inputTitle',childStore,()=>{
+        })
+        setInputName(value)
+          
       }}
 
-      onSubmit={(event) => {
+      onSubmit={(event) => {      
+        let eventName = entity === 'subtask' ? 'addSubtask' : 'addBucket'
+
+        onUpdate({ title: inputName }, id, entity, eventName,childStore,()=>{
+          setInputName('')
+        })
+    
         event.stopPropagation()
         event.preventDefault()
-        setInputName('')
         return false
       }}
 
@@ -58,18 +60,11 @@ export default function BasicTextFields({ add, text, style, variantName = "outli
 
               actionAdd={() => {
 
-                // this is for mobxstore<hook> to entity/BucketStore handler
-                if (add.mobxstore) {
-                  const mobxstore = add.mobxstore
-                  mobxstore.addBucket({ title: inputName }).then(()=>setInputName(''))            
-                }
-
-                // this is for entity/SubTaskStore handler
-                if (add.todoList) {
-                  if (add.todoList.addNewSubTask({ title: inputName }, id)) {
-                    setInputName('')
-                  }
-                }
+                let eventName = entity === 'subtask' ? 'addSubtask' : 'addBucket'
+                 
+                onUpdate({ title: inputName }, id, entity, eventName, childStore,()=>{
+                  setInputName('')
+                })
               }}
 
               style={

@@ -3,8 +3,8 @@ import withStoreReady from '../components/withStore.hoc';
 import React from 'react';
 import { useParams } from "react-router-dom";
 import Input from '@components/Input';
-import Todo from '../components/Todos/Todo';
-
+import BucketTodo from '../components/Todos/BucketTodo';
+import { log} from 'x-utils-es';
 
 
 function Home(props){
@@ -12,6 +12,10 @@ function Home(props){
   const { user } = useParams();
   // console.log('you are logged in as: ',`user: ${user}`)
   
+  const storeOnUpdateHandler=(data,id,entity,eventName,childStore, onDone)=>{
+    mobxstore.onUpdate(data,id,entity,eventName,childStore,onDone)
+  }
+
   return (
     <>
       <div className="row">
@@ -19,7 +23,10 @@ function Home(props){
           <div className="d-flex justify-content-center align-items-center w-50 m-auto">
             <Input
               variantName='outlined' text='New bucket' 
-              add={ {mobxstore} }
+              entity='homeComponent'
+              childStore={null}
+              onUpdate={storeOnUpdateHandler}
+              add={ true }
               />
    
           </div>
@@ -27,8 +34,8 @@ function Home(props){
       </div>
 
       <div className="row">
-        <div className="col-5 m-auto">
-          <Todo mobxstore={mobxstore} />
+        <div className="col-7 m-auto p-4">
+          <BucketTodo mobxstore={mobxstore} onUpdate={storeOnUpdateHandler}/>
         </div>
       </div>
     </>

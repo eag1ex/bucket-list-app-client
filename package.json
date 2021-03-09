@@ -25,7 +25,10 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
-    "eject": "react-app-rewired eject"
+    "eject": "react-app-rewired eject",
+    "lint:install": "npm i babel-eslint eslint eslint-plugin-node eslint-plugin-standard eslint-plugin-promise@latest --save-dev",
+    "lint": "./node_modules/.bin/eslint  --ext .js src",
+    "lint:fix": "./node_modules/.bin/eslint --fix --ext .js src"
   },
   "engineStrict": true,
   "engines": {
@@ -33,7 +36,9 @@
     "npm": "~6.9.0"
   },
   "eslintConfig": {
-    "extends": ["react-app"]
+    "extends": [
+      "react-app"
+    ]
   },
   "browserslist": {
     "production": [
@@ -51,7 +56,11 @@
     "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/preset-env": "^7.13.9",
     "babel-eslint": "^10.1.0",
+    "eslint": "^6.8.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.3.1",
     "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-standard": "^5.0.0",
     "react-app-rewire-alias": "^1.0.1",
     "react-app-rewired": "^2.1.8"
   }

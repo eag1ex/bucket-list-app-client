@@ -1,14 +1,11 @@
 import React from "react";
 import { BrowserRouter, Switch, Route,Redirect } from "react-router-dom";
 import { theme } from "@scss/material.theme"
-//import { observer } from "mobx-react-lite";
 import { ThemeProvider } from '@material-ui/core/styles';
-import MobXStore from './store/MobxStore.store'
+import MobXStore from './store/MobxStore'
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Message from './components/Messages'
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { log } from 'x-utils-es';
 const mobxstore = new MobXStore()
 function App() {
 
@@ -49,12 +46,3 @@ function App() {
 
 export default App;
 
-
-
-/*
-   <React.Fragment>
-              <div className="d-flex justify-content-center align-items-center m-5">
-                  <CircularProgress color="inherit" size={20} />
-              </div>            
-              </React.Fragment>
-* */
