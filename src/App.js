@@ -6,6 +6,17 @@ import MobXStore from './store/MobxStore'
 import Navbar from "./components/Navbar"
 import Home from "./pages/Home"
 import Message from './components/Messages'
+import { loggerSetting, log } from 'x-utils-es'
+
+if (process.env.NODE_ENV === 'production') {
+    loggerSetting('log', 'off')
+    loggerSetting('debug', 'off')
+}
+
+if (process.env.NODE_ENV === 'development') {
+    log('IN_DEVELOPENT_MODE')
+}
+ 
 const mobxstore = new MobXStore()
 function App() {
 
