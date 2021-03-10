@@ -22,7 +22,11 @@ const useStyles = (opts = {}) => makeStyles((theme) => {
 
 export default function FloatingActionButtons({ actionAdd, style }) {
     const classes = useStyles({ style })
-    const onClick = (event) => (actionAdd ? actionAdd() : null)  
+    const onClick = (event) => {
+        if (actionAdd) actionAdd() 
+        event.stopPropagation()
+        event.preventDefault()
+    }
 
     return (
         <div className={classes.root}>

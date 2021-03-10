@@ -13,18 +13,22 @@ const useStyles = makeStyles((theme) => ({
     },
     heading: {
         fontSize: theme.typography.pxToRem(15),
-        flexBasis: '33.33%',
+        flexBasis: '85%',
         margin: '0px',
         flexShrink: 0
     },
     secondaryHeading: {
         fontSize: 'smaller',
+        paddingTop: '0.75rem!important',
         color: theme.palette.text.secondary,
-        flexShrink: 0
+        flexShrink: 0,
+        flexBasis: '15%'
+        // position: 'absolute',
+        // right: '10%'
     }
 }))
 
-export default function AccordionSection({ SubTasks, Check, item }) {
+export default function AccordionSection({ SubTasks, Check, item, finishedCount }) {
 
     const classes = useStyles()
     return (<div className={classes.root}>
@@ -45,7 +49,7 @@ export default function AccordionSection({ SubTasks, Check, item }) {
                     }
                     label={item.title}
                 />
-                <Typography className={classes.secondaryHeading + " p-2 "}>Done /{item.subtasks.length} </Typography>
+                <Typography className={classes.secondaryHeading}>Done {finishedCount}/{item.subtasks.length} </Typography>
 
             </AccordionSummary>
 

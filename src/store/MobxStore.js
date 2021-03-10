@@ -1,6 +1,6 @@
-import { action, observable, makeObservable, observe, runInAction } from "mobx"
-import { log, onerror, delay, copy } from 'x-utils-es'
-import { BucketStore, Bucket } from '../components/Todos/Models'
+import { action, observable, makeObservable, observe } from "mobx"
+import { log, onerror } from 'x-utils-es'
+import { BucketStore } from '../components/Todos/Models'
 import MobXStoreAPI from './MobxStore.api'
 import { tasksComplete } from '../utils'
 
@@ -31,7 +31,7 @@ export default class MobXStore extends MobXStoreAPI {
      * @param {*} data data as object transmited
      * @param {*} id id that belongs to each entity, except for homeComponent
      * @param {*} entity [homeComponent','bucket','subtask']
-     * @param {*} eventName [addBucket ','addSubtask','subtask','inputTitle,statusChange]
+     * @param {*} eventName [addBucket ','addSubtask','subtask','inputTitle,statusChange,statusNoChange]
      * @param {*} childStore current store instance during execution, 
      */
     async onUpdate(data = {}, id, entity, eventName, childStore, onDone) {
@@ -65,6 +65,9 @@ export default class MobXStore extends MobXStoreAPI {
 
                 case 'bucket': {
 
+                    // eslint-disable-next-line no-empty
+                    if (eventName === 'statusNoChange') {}
+
                     if (eventName === 'statusChange') {
                         let r = await this.fetch_updateBucketStatusPost({ status: data.status }, id)
                         if (r) {
@@ -93,10 +96,10 @@ export default class MobXStore extends MobXStoreAPI {
       
                             let bucketID = childStore.id
                             let status = tasksComplete(childStore.todos) ? 'completed' : 'pending'
-                            if (!await this.fetch_updateBucketStatusPost({ status }, bucketID)) {
+                            if (!await this.fetch_updateBucketOnlyStatus({ status }, bucketID)) {
                                 done = {
                                     fail: true,
-                                    message: 'fetch_updateSubtaskStatusPost > fetch_updateBucketStatusPost not complete'
+                                    message: 'fetch_updateSubtaskStatusPost > fetch_updateBucketOnlyStatus not complete'
                                 }
                             }
                             
@@ -128,7 +131,6 @@ export default class MobXStore extends MobXStoreAPI {
                         message: `no entity matched for: ${entity}`
                     }
                 }
-
             }
 
             if (!done) {
@@ -148,7 +150,7 @@ export default class MobXStore extends MobXStoreAPI {
             }
         }
 
-        log('[MobXStore][onUpdate]', data, id, entity, childStore, eventName)
+        log('[MobXStore][onUpdate]', '[data][id][entity][childStore][eventName][?onDone]')
     }
 
     /**
@@ -156,6 +158,7 @@ export default class MobXStore extends MobXStoreAPI {
      * @param {*} data 
      */
     async addBucket_and_fetch({ title }) {
+
         await this.childStoresAvailable.bucketStore.promise
         if (this.childstores.bucketStore instanceof BucketStore) {
             // execute bucketStore addNewBucket
@@ -177,7 +180,7 @@ export default class MobXStore extends MobXStoreAPI {
     * @param {*} data 
     */
     async addSubtask_and_fetch({ title }, childStore) {
-
+     
         // just a reminder, we are using same class for both {BucketStore} and {subTaskStore}
         // the only difference is the {entity}
        

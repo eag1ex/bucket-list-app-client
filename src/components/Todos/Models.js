@@ -47,6 +47,7 @@ class Subtask {
             this.created_at = created_at
         }
 
+        // initial cleanup
         if (this.status === 'completed') {
             this.finished = true
         }
@@ -56,12 +57,12 @@ class Subtask {
             if (change.newValue === 'completed') {
                 this.finished = true
             }
-
             log('[subtask]', `is ${change.newValue}`)
         })
     }
 
     toggle() {
+     
         this.finished = !this.finished
         this.status = this.finished ? 'completed' : 'pending'
     }
@@ -115,14 +116,25 @@ class Bucket {
             this.status = status
             this.created_at = created_at
             this.subtasks = (subtasks || []).length ? copy(subtasks).map(n => new Subtask(n)) : []
-        }
 
+            // sort tasks 
+            this.subtasks.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+
+        }
+        // initial cleanup
+        // if we got some completed buckets from db but have no subtask
         if (this.status === 'completed') {
             this.finished = true
             this.reopenStatus = false
         
             // NOTE so we can check if real changes happened on database
             // this.setSubTasksStatus('completed')
+        } 
+
+        if (this.status === 'completed' && !this.subtasks.length) {
+            this.status = 'pending'
+            this.finished = false
+            this.reopenStatus = false
         }
 
         observe(this, 'status', change => {
@@ -158,6 +170,8 @@ class Bucket {
     }
 
     toggle() {
+        // dont perform checks if not subs available
+        if (!this.subtasks.length) return
         this.finished = !this.finished
         this.status = this.finished ? 'completed' : 'pending'
         return this.finished
@@ -267,6 +281,9 @@ class BucketStore/** SubTaskStore */ {
     get unfinishedCount() {
         return this.todos.filter(todo => !todo.finished).length
     }
+    get finishedCount() {
+        return this.todos.filter(todo => todo.finished).length
+    }
 
     /**
      * 
@@ -280,6 +297,7 @@ class BucketStore/** SubTaskStore */ {
             state: observable,
             todos: observable,
             unfinishedCount: computed,
+            finishedCount: computed,
             // onUpdate:action
             addNewBucket: action,
             addNewSubTask: action
@@ -308,6 +326,23 @@ class BucketStore/** SubTaskStore */ {
 
         // log(`[entity: ${this.entity}] /todos`, this.todos)
     }
+   
+    /**
+     * @memberof Subtask/Bucket
+     * grab either subtask or bucket by id
+     * @param {*} id
+     */
+    taskByID(id) {
+        if (this.entity === 'SubTaskStore') {
+            let task = this.todos.find(n => n.todo_id === id)
+            if (task instanceof Subtask) return task
+        }
+        if (this.entity === 'BucketStore') {
+            let task = this.todos.find(n => n.id === id)
+            if (task instanceof Bucket) return task
+        }
+        return undefined
+    }
 
     /**
      * add new bucket ahead of time then wait for server response to update again using lazy callback
@@ -321,7 +356,10 @@ class BucketStore/** SubTaskStore */ {
 
         try {
 
-            if (!title) throw new Error('Bucket not added, {title} missing')
+            if (!title) {
+                warn('Bucket not added, {title} missing')
+                return 
+            }
 
             /**
              * NOTE
@@ -377,7 +415,7 @@ class BucketStore/** SubTaskStore */ {
     addNewSubTask({ title }, lazyCB) {
 
         if (this.entity !== 'SubTaskStore') {
-            throw (`not allowed performing task/addSubTask on entity:${this.entity}`)
+            throw new Error(`not allowed performing task/addSubTask on entity:${this.entity}`)
         }
 
         try {

@@ -2,7 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import Add from './Add'
-
+import { warn } from 'x-utils-es'
 const useStyles = (opts = {}) => makeStyles((theme) => {
     let o = {
         root: {
@@ -44,9 +44,13 @@ export default function BasicTextFields({ className, entity, add, childStore, te
             onSubmit={(event) => {      
                 let eventName = entity === 'subtask' ? 'addSubtask' : 'addBucket'
 
-                onUpdate({ title: inputName }, id, entity, eventName, childStore, () => {
-                    setInputName('')
-                })
+                if ((inputName || '').length > 1) {
+                    onUpdate({ title: inputName }, id, entity, eventName, childStore, () => {
+                        setInputName('')
+                    })
+                } else {
+                    warn('[Input]', 'title is too short')
+                }
     
                 event.stopPropagation()
                 event.preventDefault()
@@ -66,10 +70,14 @@ export default function BasicTextFields({ className, entity, add, childStore, te
                             actionAdd={() => {
 
                                 let eventName = entity === 'subtask' ? 'addSubtask' : 'addBucket'
-                 
-                                onUpdate({ title: inputName }, id, entity, eventName, childStore, () => {
-                                    setInputName('')
-                                })
+                                if ((inputName || '').length > 1) {
+                                    onUpdate({ title: inputName }, id, entity, eventName, childStore, () => {
+                                        setInputName('')
+                                    })
+                                } else {
+                                    warn('[Input]', 'title is too short')
+                                }
+                              
                             }}
 
                             style={

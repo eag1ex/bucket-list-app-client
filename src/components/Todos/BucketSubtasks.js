@@ -8,7 +8,6 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import Checkbox from '@material-ui/core/Checkbox'
 import { BucketStore as SubTaskStore } from './Models'
-
 import Input from '../Input'
 
 const useStyles = makeStyles((theme) => ({
@@ -19,8 +18,17 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-const SubTaskView = observer(({ todo, inx, onUpdate, subTaskStore }) => {
-   
+const SubTaskView = observer(({ todo, inx, onUpdate, subTaskStore, currentCount, onCurrentCount }) => {
+
+    // callback to <BucketView/>
+    const [didLoad, setDidLoad] = React.useState(false)
+    React.useEffect(() => {
+        if (!didLoad) {
+            currentCount(subTaskStore.finishedCount)
+            setDidLoad(true)
+        }
+    }, [didLoad, currentCount, subTaskStore.finishedCount])
+
     const labelId = `subtask-item checkbox-list-label-${inx}`
     return (<ListItem
 
@@ -29,6 +37,7 @@ const SubTaskView = observer(({ todo, inx, onUpdate, subTaskStore }) => {
         onClick={(e => {
             todo.toggle()
             onUpdate(todo, todo.todo_id, 'subtask', 'statusChange', subTaskStore) // hoc call to Bucket
+            onCurrentCount() // execute change only
             e.stopPropagation()
         })}>
         <ListItemIcon>
@@ -43,12 +52,12 @@ const SubTaskView = observer(({ todo, inx, onUpdate, subTaskStore }) => {
     </ListItem>)
 })
 
-const SubTasksListView = observer(({ subTaskStore, inx, onUpdate }) => {
+const SubTasksListView = observer(({ subTaskStore, inx, onUpdate, currentCount, onCurrentCount }) => {
 
     const classes = useStyles()
     return (<List className={classes.root + ` m-auto subtask-list`}>
         {subTaskStore.todos.map(todo => (
-            <SubTaskView todo={todo} key={todo.todo_id} inx={inx} onUpdate={onUpdate} subTaskStore={subTaskStore} />
+            <SubTaskView onCurrentCount={onCurrentCount} currentCount={currentCount} todo={todo} key={todo.todo_id} inx={inx} onUpdate={onUpdate} subTaskStore={subTaskStore} />
         ))}
 
         <div className="d-flex justify-content-between align-items-center flex-row subtask-item">
@@ -60,17 +69,17 @@ const SubTasksListView = observer(({ subTaskStore, inx, onUpdate }) => {
                 entity='subtask'
                 childStore={subTaskStore}
                 onUpdate={onUpdate} // we need to handle add new update events as well
-                add={ true } // tells the input to add <Add/> component
-            />     
+                add={true} // tells the input to add <Add/> component
+            />
         </div>
- 
+
     </List>)
 })
 
 const SubtaskComponent = (props) => {
-    const { subtasks, id, onUpdate } = props
+    const { subtasks, id, onUpdate, onCurrentCount, currentCount } = props
     const subTaskStore = new SubTaskStore(subtasks || [], { id, entity: 'SubTaskStore' })
-    return (<SubTasksListView subTaskStore={subTaskStore} onUpdate={onUpdate} />)
+    return (<SubTasksListView currentCount={currentCount} onCurrentCount={() => onCurrentCount(subTaskStore.finishedCount)} subTaskStore={subTaskStore} onUpdate={onUpdate} />)
 }
 
 export default SubtaskComponent

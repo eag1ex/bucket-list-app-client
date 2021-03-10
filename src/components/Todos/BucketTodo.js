@@ -23,15 +23,22 @@ const BucketView = observer(({ todo, onUpdate, mobxstore, bucketStore }) => {
     // eslint-disable-next-line no-empty
     if (!todo.finished === false) { } // hack fix
 
+    // get subtasks completion count
+    const [finishedCount, setCount] = React.useState(0)
+    const currentCount = (count) => setCount(count)
+
     return (
         <div className="d-flex justify-content-center m-auto px-3 py-2 bucket-item">
             <Accordion
                 Check={() => (
                     <Checkbox
-                        onClick={(e) => {
-                          
+                        onClick={(e) => {                         
                             let status = todo.toggle() ? 'completed' : 'pending'
-                            onUpdate({ status }, todo.id, 'bucket', 'statusChange', bucketStore)
+                            let buck = bucketStore.taskByID(todo.id)
+                            // dont emit same event when we dont have any subtaks to perform
+                            let eventName = buck.subtasks.length ? 'statusChange' : 'statusNoChange'
+                            onUpdate({ status }, todo.id, 'bucket', eventName, bucketStore)
+
                             e.stopPropagation()
                         }}
                         checked={todo.finished}
@@ -40,9 +47,12 @@ const BucketView = observer(({ todo, onUpdate, mobxstore, bucketStore }) => {
                 )}
 
                 item={todo}
-                SubTasks={() => (<BucketSubTasks mobxstore={mobxstore} subtasks={todo.subtasks || []} id={todo.id} onUpdate={(data, id, entity, eventName, childStore, onDone) => {
+                finishedCount={finishedCount}        
+                SubTasks={() => (<BucketSubTasks onCurrentCount={currentCount} currentCount={(count) => currentCount(count)} mobxstore={mobxstore} subtasks={todo.subtasks || []} id={todo.id} onUpdate={(data, id, entity, eventName, childStore, onDone) => {
+     
                     todo.onUpdate(data, entity, eventName)
                     onUpdate(data, id, 'subtask', eventName, childStore, onDone)
+                   
                 }} />)}
             />
         </div>
