@@ -1,8 +1,8 @@
-import { action, observable, makeObservable, runInAction } from "mobx"
-import { delay, onerror, sq, log } from 'x-utils-es'
+import { observable, makeObservable, runInAction } from "mobx"
+import { onerror, sq } from 'x-utils-es'
 import { BucketStore, Bucket, Subtask } from '../components/Todos/Models'
-import { fetchHandler, updateTodoValues } from '../utils'
-import { api } from './api';
+import { fetchHandler, updateTodoValues, presetPost } from '../utils'
+import { api } from './api'
 Object.freeze(api) // no mods please!
 
 export default class MobXStoreAPI {
@@ -10,51 +10,64 @@ export default class MobXStoreAPI {
     todoData = []
     state = "pending" // "pending", "ready", "error", "updating", "update-error"
 
-
     childStoresAvailable = {
-        bucketStore: sq(),
-        subTaskStore: sq()
+        bucketStore: sq()
     }
 
     childstores = {
-        // these stores become available after rendering and when resolved by {childStoresAvailable}
-        bucketStore: null,
-        subTaskStore: null
+        // these stores become available after rendering
+        bucketStore: null
     }
 
     constructor() {
 
         makeObservable(this.childStoresAvailable, {
-            bucketStore: observable,
-            subTaskStore: observable
+            bucketStore: observable
         })
 
     }
+  
+    // async fetchTodo() {
 
-    postData(data) {
-        return {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8'
-            },
-            body: JSON.stringify(data)
-        }
-    }
+    //     this.todoData = []
+    //     this.state = "pending"
+    //     await delay(2000) // fake loading
+    //     import('./dummy.data').then(
+    //         action("fetchSuccess", todos => {
+    //             this.todoData = todos.todoList
+    //             this.state = "ready"
+    //         }),
+    //         action("fetchError", error => {
+    //             this.state = "error"
+    //         })
+    //     )
+    // }
+    
+    /**
+     * fetch initial buckets from the server
+     */
+    fetch_bucketListGet() {
 
-    async fetchTodo() {
+        this.state = 'pending'
+        this.todoData = []
+        return fetch(api.bucketList(), {
+            method: 'GET', headers: { 'Content-Type': 'application/json;charset=utf-8' }
+        }).then(fetchHandler)
+            .then(({ response, code }) => {
+                // NOTE prefer this approche, more readable 
+                runInAction(() => {
+                    this.todoData = response || []
+                    this.todoData.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                    console.log('this.todoData', this.todoData)
+                    this.state = "ready"
+                })
+            }).catch(err => {
 
-        this.todoData = [];
-        this.state = "pending"
-        await delay(2000) // fake loading
-        import('./dummy.data').then(
-            action("fetchSuccess", todos => {
-                this.todoData = todos.todoList
-                this.state = "ready"
-            }),
-            action("fetchError", error => {
-                this.state = "error"
+                runInAction(() => {
+                    this.state = "error"
+                })
+                onerror('[fetch_bucketListGet]', err)
             })
-        )
     }
 
     /**
@@ -63,9 +76,9 @@ export default class MobXStoreAPI {
      * @param {*} {title}
      * @memberof MobXStoreAPI
      */
-    createBucketPost({ title }) {
-        //this.state = "updating"
-        return fetch(api.createBucket(), this.postData({ title })).then(fetchHandler)
+    fetch_createBucketPost({ title }) {
+        // this.state = "updating"
+        return fetch(api.createBucket(), presetPost({ title })).then(fetchHandler)
             .then(({ response, code }) => {
 
                 runInAction(() => {
@@ -80,7 +93,7 @@ export default class MobXStoreAPI {
                 //     this.state = "update-error"
                 // })
 
-                onerror('[createBucketPost]', err)
+                onerror('[fetch_createBucketPost]', err)
             })
     }
 
@@ -90,12 +103,11 @@ export default class MobXStoreAPI {
     * @param {*} id bucket id
     * @memberof MobXStoreAPI
     */
-    createSubtaskPost({ title }, id) {
+    fetch_createSubtaskPost({ title }, id) {
 
-        //this.state = "updating"
-        return fetch(api.createSubtask(id), this.postData({ title })).then(fetchHandler)
+        // this.state = "updating"
+        return fetch(api.createSubtask(id), presetPost({ title })).then(fetchHandler)
             .then(({ response, code }) => {
-
 
                 runInAction(() => {
 
@@ -115,43 +127,19 @@ export default class MobXStoreAPI {
                 //     this.state = "update-error"
                 // })
 
-                onerror('[createSubtaskPost]', err)
-            })
-    }
-
-
-    bucketListGet() {
-        // https://javascript.info/fetch
-        this.state = 'pending'
-        this.todoData = [];
-        return fetch(api.bucketList(), {
-            method: 'GET', headers: { 'Content-Type': 'application/json;charset=utf-8' },
-        }).then(fetchHandler)
-            .then(({ response, code }) => {
-                // NOTE prefer this approche, more readable 
-                runInAction(() => {
-                    this.todoData = response
-                    this.state = "ready"
-                })
-            }).catch(err => {
-
-                runInAction(() => {
-                    this.state = "error"
-                })
-                onerror('[bucketListGet]', err)
+                onerror('[fetch_createSubtaskPost]', err)
             })
     }
 
     /**
-    * Request to update Bucket and all subtasks based on status
+    * fetch update, and reset todoData
     * @param {*} {title}
     * @param {*} id bucket id
     * @memberof MobXStoreAPI
     */
-    updateBucketStatusPost({ status }, id) {
+    fetch_updateBucketStatusPost({ status }, id) {
 
-        //this.state = "updating"
-        return fetch(api.updateBucketStatus(id), this.postData({ status })).then(fetchHandler)
+        return fetch(api.updateBucketStatus(id), presetPost({ status })).then(fetchHandler)
             .then(({ response, code }) => {
 
                 runInAction(() => {
@@ -159,9 +147,6 @@ export default class MobXStoreAPI {
                         if (n.id === id) n = response
                         return n
                     })
-
-                    this._updateBucket(response, id)
-
                 })
 
                 return response
@@ -172,19 +157,19 @@ export default class MobXStoreAPI {
                 //     this.state = "update-error"
                 // })
 
-                onerror('[updateBucketStatusPost]', err)
+                onerror('[fetch_updateBucketStatusPost]', err)
             })
 
     }
 
     /**
-    * Request to update subtask status
+    * fetch update, and reset todoData
     * @param {*} {title}
     * @param {*} todo_id subtask id
     * @memberof MobXStoreAPI
     */
-    updateSubtaskStatusPost({ status }, todo_id) {
-        return fetch(api.updateSubtaskStatus(todo_id), this.postData({ status })).then(fetchHandler)
+    fetch_updateSubtaskStatusPost({ status }, todo_id) {
+        return fetch(api.updateSubtaskStatus(todo_id), presetPost({ status })).then(fetchHandler)
             .then(({ response, code }) => {
 
                 runInAction(() => {
@@ -193,9 +178,6 @@ export default class MobXStoreAPI {
                         if (n.id === todo_id) n = response
                         return n
                     })
-
-                    this._updateSubtask(response, todo_id)
-
                 })
 
                 return response
@@ -209,7 +191,6 @@ export default class MobXStoreAPI {
                 onerror('[updateSubtaskStatusPost]', err)
             })
     }
-
 
     /**
      * update store and bucket directly without rerendering component
@@ -230,13 +211,13 @@ export default class MobXStoreAPI {
     }
 
     /**
-     * Update bucket data from response
+     * update store and bucket directly without rerendering component
      * @param {*} response 
      * @param {*} id 
      */
-    _updateBucket(response, id) {
-        if (this.childstores.bucketStore instanceof BucketStore) {
-            this.childstores.bucketStore.todos = this.childstores.bucketStore.todos.map(todo => {
+    _updateBucket(response, id, childStore) {
+        if (childStore instanceof BucketStore) {
+            childStore.todos = childStore.todos.map(todo => {
                 if (todo.id === id) {
                     if (todo instanceof Bucket) {
                         todo = updateTodoValues(response, todo)
@@ -249,17 +230,16 @@ export default class MobXStoreAPI {
     }
 
     /**
-     * Update subtask data from response
+     * update store and subtask directly without rerendering component
      * @param {*} response 
      * @param {*} todo_id 
      */
-    _updateSubtask(response, todo_id) {
-        if (this.childstores.subTaskStore instanceof BucketStore) {
-            this.childstores.subTaskStore.todos = this.childstores.subTaskStore.todos.map(todo => {
+    _updateSubtask(response, todo_id, subTaskStore) {
+        if (subTaskStore instanceof BucketStore) {
+            subTaskStore.todos = subTaskStore.todos.map(todo => {
                 if (todo instanceof Subtask) {
                     if (todo.todo_id === todo_id) {
                         todo.updateSubtask(response)
-                        log('updated todo ?', todo, response)
                     }
                 }
                 return todo

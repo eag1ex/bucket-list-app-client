@@ -1,13 +1,12 @@
-import { action, observable, makeObservable, observe } from "mobx"
-import { log, onerror } from 'x-utils-es'
-import { BucketStore } from '../components/Todos/Models'
+import { action, observable, makeObservable, observe, runInAction } from "mobx"
+import { log, onerror, delay, copy } from 'x-utils-es'
+import { BucketStore, Bucket } from '../components/Todos/Models'
 import MobXStoreAPI from './MobxStore.api'
+import { tasksComplete } from '../utils'
 
 // TODO add server upkeep check  
 
-
 export default class MobXStore extends MobXStoreAPI {
-
 
     constructor() {
         super()
@@ -15,26 +14,16 @@ export default class MobXStore extends MobXStoreAPI {
         makeObservable(this, {
             todoData: observable,
             state: observable,
-            addBucket: action,
-            addSubtask: action,
             onUpdate: action,
-            bucketListGet: action,
-            createSubtaskPost: action,
-            createBucketPost: action,
-            updateBucketStatusPost: action
-        });
-
-
+            fetch_bucketListGet: action
+        })
 
         // NOTE get initial bucket data from server
-        this.bucketListGet()
-
+        this.fetch_bucketListGet()
 
         observe(this, 'todoData', change => {
             log(`[todoData][updated]`)
         })
-
-
     }
 
     /**
@@ -48,23 +37,25 @@ export default class MobXStore extends MobXStoreAPI {
     async onUpdate(data = {}, id, entity, eventName, childStore, onDone) {
 
         let entities = ['homeComponent', 'bucket', 'subtask']
-        if(!onDone) onDone = function(){}
+        if (!onDone) onDone = function () { }
 
-        let doSwitch = async (entity) => {
+        let doSwitch = async (ent) => {
             let done = {}
-            switch (entity) {
+            switch (ent) {
                 case 'homeComponent': {
 
-                    if (eventName === 'inputTitle') {
-                        // on input type and change set
-                    }
+                    // disabled
+                    // if (eventName === 'inputTitle') {
+                    //     // on input type and change set
+                    // }
 
                     if (eventName === 'addBucket') {
-                        if (!await this.addBucket(data)) onDone(true)
+                        let r = await this.addBucket_and_fetch(data)
+                        if (r) onDone(true)
                         else {
                             done = {
                                 fail: true,
-                                message: 'bucketStore not available on mobxstore'
+                                message: 'addBucket_and_fetch no completed'
                             }
                         }
                     }
@@ -75,8 +66,14 @@ export default class MobXStore extends MobXStoreAPI {
                 case 'bucket': {
 
                     if (eventName === 'statusChange') {
-                        if(await this.updateBucketStatusPost({status:data.status},id)){
-                            log('bucket/statusChange updated !!')
+                        let r = await this.fetch_updateBucketStatusPost({ status: data.status }, id)
+                        if (r) {
+                            this._updateBucket(r, id, childStore)
+                        } else {
+                            done = {
+                                fail: true,
+                                message: 'fetch_updateBucketStatusPost not complete'
+                            }
                         }
                     }
 
@@ -86,23 +83,38 @@ export default class MobXStore extends MobXStoreAPI {
                 case 'subtask': {
 
                     if (eventName === 'statusChange') {
-                        if(await this.updateSubtaskStatusPost({status:data.status},id)){
+
+                        let r = await this.fetch_updateSubtaskStatusPost({ status: data.status }, id)
+                        if (r) {
+
+                            this._updateSubtask(r, id, childStore)
+
+                            // when all subtasks are completed/ or still pending, make another fetch and update bucket status to complete
+      
+                            let bucketID = childStore.id
+                            let status = tasksComplete(childStore.todos) ? 'completed' : 'pending'
+                            if (!await this.fetch_updateBucketStatusPost({ status }, bucketID)) {
+                                done = {
+                                    fail: true,
+                                    message: 'fetch_updateSubtaskStatusPost > fetch_updateBucketStatusPost not complete'
+                                }
+                            }
+                            
                             onDone(true)
-                            log('subtask/statusChange updated !!')
                         } else {
                             done = {
                                 fail: true,
-                                message: 'subTaskStore not available on mobxstore'
+                                message: 'fetch_updateSubtaskStatusPost not complete'
                             }
                         }
                     }
 
                     if (eventName === 'addSubtask') {
-                        if (await this.addSubtask(data, childStore)) onDone(true)
+                        if (await this.addSubtask_and_fetch(data, childStore)) onDone(true)
                         else {
                             done = {
                                 fail: true,
-                                message: 'subTaskStore not available on mobxstore'
+                                message: 'addSubtask not complete'
                             }
                         }
                     }
@@ -128,8 +140,9 @@ export default class MobXStore extends MobXStoreAPI {
             return done
         }
 
-        for (let entity of entities) {
-            let o = doSwitch(entity)
+        for (let ent of entities) {
+            if (ent !== entity) continue
+            let o = doSwitch(ent)
             if (o) {
                 if (o.fail) onerror('[MobXStore][onUpdate]', o.message)
             }
@@ -142,14 +155,14 @@ export default class MobXStore extends MobXStoreAPI {
      * The store gains access to BucketStore after <BucketComponent/> is loaded
      * @param {*} data 
      */
-    async addBucket({ title }) {
+    async addBucket_and_fetch({ title }) {
         await this.childStoresAvailable.bucketStore.promise
         if (this.childstores.bucketStore instanceof BucketStore) {
             // execute bucketStore addNewBucket
             // wait for server response 
             // perform lazy callback    
             let bucketItem = this.childstores.bucketStore.addNewBucket({ title }, ({ title }) => {
-                return this.createBucketPost({ title }).then(n => {
+                return this.fetch_createBucketPost({ title }).then(n => {
                     if (!n) return Promise.reject('addBucket,No data available')
                     else return n
                 }).catch(onerror)
@@ -159,33 +172,33 @@ export default class MobXStore extends MobXStoreAPI {
         return false
     }
 
-
     /**
     * The store gains access to SubtaskStore after <BucketSubTasks/> is loaded
     * @param {*} data 
     */
-    async addSubtask({ title }, childStore) {
+    async addSubtask_and_fetch({ title }, childStore) {
 
         // just a reminder, we are using same class for both {BucketStore} and {subTaskStore}
         // the only difference is the {entity}
-        if (childStore instanceof BucketStore) {
+       
+        if (childStore instanceof BucketStore && childStore.entity === 'SubTaskStore') {
+
             // execute subTaskStore addNewSubTask
             // wait for server response 
             // perform lazy callback    
             const bucketId = childStore.id
+
             let subtaskItem = childStore.addNewSubTask({ title }, ({ title }) => {
-                return this.createSubtaskPost({ title }, bucketId).then(n => {
-                    if (!n) return Promise.reject('addSubtask,No data available')
+                
+                return this.fetch_createSubtaskPost({ title }, bucketId).then(n => {
+                    if (!n) return Promise.reject('addSubtask, No data available')
                     else return n
                 }).catch(onerror)
             })
-
-            log('addNewSubTask called', subtaskItem)
 
             return subtaskItem
         }
         return false
     }
-
 
 }

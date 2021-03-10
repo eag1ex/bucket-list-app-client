@@ -1,0 +1,22 @@
+
+
+@mixin accordion() {
+    .accordion-wrap{
+
+    }
+}
+
+@mixin subtask-list {
+    
+}
+
+@mixin bucket-list() {
+    .bucket-list{
+        .bucket-item{
+
+        }
+    }
+    .subtask-list{
+            .subtask-item{}      
+    }
+}

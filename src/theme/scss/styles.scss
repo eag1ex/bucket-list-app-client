@@ -3,12 +3,11 @@
 //@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 @import './variables';
 @import './bootstrap';
-
+@import './mixins.scss';
 
 html {
     background: $white1;
     background-color: $white1 !important;
-
   }
   
   body {
@@ -29,3 +28,6 @@ html {
       }
     }
   }
+
+  @include bucket-list();
+  @include subtask-list();

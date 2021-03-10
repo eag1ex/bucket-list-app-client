@@ -1,3 +1,11 @@
-#home-page {
-    background: red;
-}
+
+@import './variables';
+
+.bucket-wrap{
+    .bucket-add-input{
+        background: $body-bg;
+        input{
+            background: $body-bg;
+        }
+    }
+} 

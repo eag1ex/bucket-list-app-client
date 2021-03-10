@@ -1,12 +1,11 @@
 
-
-import {  warn,isObject } from 'x-utils-es'
+import { warn, isObject } from 'x-utils-es'
 
 /**
  * 
  * @param {*} status match available status types 
  */
-export const statusTypes =(status) => {
+export const statusTypes = (status) => {
     const o = {
         pending: 0,
         completed: 1
@@ -15,14 +14,13 @@ export const statusTypes =(status) => {
     return o[status]
 }
 
-export const tasksComplete = (tasks=[])=>{
-    return tasks.filter(n=>n.status==='completed').length===tasks.length && tasks.length>0
+export const tasksComplete = (tasks = []) => {
+    return tasks.filter(n => n.status === 'completed').length === tasks.length && tasks.length > 0
 }
 
-export const tasksPending= (tasks=[])=>{
-    return tasks.filter(n=>n.status==='pending').length===tasks.length && tasks.length>0
+export const tasksPending = (tasks = []) => {
+    return tasks.filter(n => n.status === 'pending').length === tasks.length && tasks.length > 0
 }
-
 
 /**
  * fetch handler if status error reject response
@@ -46,10 +44,24 @@ export const fetchHandler = async (response) => {
  * @param {*} source original 
  * @returns `original` modified
  */
-export const updateTodoValues = (todo={}, source)=>{
+export const updateTodoValues = (todo = {}, source) => {
 
     for (let [k, val] of Object.entries(todo).values()) {
         if (source[k]) source[k] = val
     }
     return source
+}
+
+/**
+ * Preset post headers
+ * @param {*} data 
+ */
+export const presetPost = (data) => {
+    return {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+    }
 }

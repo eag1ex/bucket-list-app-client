@@ -1,8 +1,8 @@
 
-import { makeObservable, observable, computed, action, observe, runInAction, configure } from "mobx";
-import { log, onerror, copy, warn, isFunction } from 'x-utils-es';
-import { tasksComplete, tasksPending, updateTodoValues } from '../../utils';
-import { v4 } from 'uuid';
+import { makeObservable, observable, computed, action, observe, runInAction, configure } from "mobx"
+import { log, onerror, copy, warn, isFunction, delay } from 'x-utils-es'
+import { tasksComplete, tasksPending, updateTodoValues } from '../../utils'
+import { v4 } from 'uuid'
 
 configure({
     enforceActions: "never"
@@ -11,7 +11,6 @@ configure({
     // observableRequiresReaction: true,
     // disableErrorBoundaries: true,
 })
-
 
 class Subtask {
     // initial values
@@ -28,14 +27,12 @@ class Subtask {
             todo_id: observable,
             status: observable,
             title: observable,
-            created_at: observable,
+            // created_at: observable,
             error: observable,
-
             finished: observable,
             toggle: action,
-            updateSubtask:action
-        });
-
+            updateSubtask: action
+        })
 
         if (!title || !todo_id || !status || !created_at) {
             this.error = 'new Subtask missing some props'
@@ -44,12 +41,11 @@ class Subtask {
         } else {
 
             this.error = ''
-            this.todo_id = todo_id;
-            this.title = title;
-            this.status = status;
+            this.todo_id = todo_id
+            this.title = title
+            this.status = status
             this.created_at = created_at
         }
-
 
         if (this.status === 'completed') {
             this.finished = true
@@ -66,7 +62,7 @@ class Subtask {
     }
 
     toggle() {
-        this.finished = !this.finished;
+        this.finished = !this.finished
         this.status = this.finished ? 'completed' : 'pending'
     }
       
@@ -80,7 +76,6 @@ class Subtask {
     }
 }
 
-
 class Bucket {
     // initial values
     id = ''
@@ -90,6 +85,7 @@ class Bucket {
     subtasks = []
     finished = false
     error = ''
+    reopenStatus = false // if the bucket was closed and we added another subtask
 
     // dataState = 'pending' // [pending,ready,error]
     constructor({ id, title, status, created_at, subtasks }) {
@@ -98,14 +94,14 @@ class Bucket {
             id: observable,
             status: observable,
             title: observable,
-            created_at: observable,
+            //  created_at: observable,
             subtasks: observable,
             error: observable,
             finished: observable,
             toggle: action,
-            onUpdate: action
-        });
-
+            onUpdate: action,
+            reopenStatus: observable
+        })
 
         if (!title || !id || !status || !created_at) {
             this.error = 'new Bucket missing some props'
@@ -114,22 +110,27 @@ class Bucket {
         } else {
 
             this.error = ''
-            this.id = id;
-            this.title = title;
-            this.status = status;
+            this.id = id
+            this.title = title
+            this.status = status
             this.created_at = created_at
             this.subtasks = (subtasks || []).length ? copy(subtasks).map(n => new Subtask(n)) : []
         }
 
-
         if (this.status === 'completed') {
             this.finished = true
+            this.reopenStatus = false
+        
             // NOTE so we can check if real changes happened on database
             // this.setSubTasksStatus('completed')
         }
 
         observe(this, 'status', change => {
-            this.setSubTasksStatus(change.newValue)
+           
+            if (!this.reopenStatus) {
+                this.setSubTasksStatus(change.newValue)
+            }
+                
         })
 
         observe(this, 'subtasks', change => {
@@ -150,40 +151,27 @@ class Bucket {
                     this.status = 'pending'
                     this.finished = false
                     log('[tasksPending]', 'bucket is pending')
-                })
-
-                return
+                })          
             }
 
-            if (!tasksPending(change.newValue) && !tasksComplete(change.newValue)) {
-                runInAction(() => {
-                    this.status = 'pending'
-                    this.finished = false
-                    log('[tasksPending]', 'bucket is still pending')
-                })
-
-                return
-            }
         })
     }
 
-
     toggle() {
-        this.finished = !this.finished;
+        this.finished = !this.finished
         this.status = this.finished ? 'completed' : 'pending'
         return this.finished
     }
-
 
     addSubtask(subTask = []) {
         subTask = copy(subTask)
         runInAction(() => {
             let newSub = new Subtask(subTask)
-            if (!newSub.error) this.subtasks.push(newSub)
-            else warn('[addSubtask]', 'subtask not added')
+            if (!newSub.error) {
+                this.subtasks.push(newSub)
+            } else warn('[addSubtask]', 'subtask not added')
         })
     }
-  
 
     /**
      * 
@@ -193,11 +181,37 @@ class Bucket {
      */
     onUpdate(task, entity, eventName) {
 
-        if (eventName === 'statusChange' && entity === 'subtask') {
+        if (eventName === 'addSubtask' && entity === 'subtask') {
 
+            // this.setSubTasksStatus(task.status, task.todo_id)
             runInAction(() => {
+                if (this.status === 'completed') {
+                    this.reopenStatus = true
+                    delay(300).then(() => {
+                        this.finished = false   
+                        this.status = 'pending'                  
+                        this.reopenStatus = false
+                         
+                    })                             
+                }
+            })
 
+            return 
+        }
+
+        if (eventName === 'statusChange' && entity === 'subtask') {
+           
+            runInAction(() => {
+               
                 this.setSubTasksStatus(task.status, task.todo_id)
+
+                if (this.status === 'completed' && !tasksComplete(this.subtasks)) {
+                    this.reopenStatus = true
+                    this.status = 'pending'
+                    this.finished = false
+                    this.reopenStatus = false
+                    return 
+                }
 
                 if (tasksComplete(this.subtasks)) {
                     this.status = 'completed'
@@ -225,15 +239,14 @@ class Bucket {
                 this.subtasks = this.subtasks
                     .map(n => {
                         if (todo_id === undefined) {
-                            console.log('what is n',n)
+       
                             n.status = byStatus
-                            n.finished = byStatus === 'completed' ? true : false
+                            n.finished = byStatus === 'completed'
                             return n
-                        }
-                        else {
+                        } else {
                             if (todo_id === n.todo_id) {
                                 n.status = byStatus
-                                n.finished = byStatus === 'completed' ? true : false
+                                n.finished = byStatus === 'completed'
                             }
                             return n
                         }
@@ -243,17 +256,16 @@ class Bucket {
     }
 }
 
-
 /**
  * BucketStore class is also used as SubTaskStore class, that is why we use {entity} name
  */
-class BucketStore/**SubTaskStore */ {
+class BucketStore/** SubTaskStore */ {
     todos = [];
     state = "pending" // "pending", "update" "ready" or "error"
 
     id = '' // NOTE id not available on entity BucketStore
     get unfinishedCount() {
-        return this.todos.filter(todo => !todo.finished).length;
+        return this.todos.filter(todo => !todo.finished).length
     }
 
     /**
@@ -271,7 +283,7 @@ class BucketStore/**SubTaskStore */ {
             // onUpdate:action
             addNewBucket: action,
             addNewSubTask: action
-        });
+        })
 
         this.entity = entity
         this.id = id
@@ -286,9 +298,8 @@ class BucketStore/**SubTaskStore */ {
             this.state = 'ready'
         }
 
-
         observe(this, 'todos', change => {
-            log(`[${this.entity}][todos][updated]`, change.newValue)
+            log(`[${this.entity}][todos][updated]`)
         })
 
         observe(this, 'state', change => {
@@ -305,7 +316,7 @@ class BucketStore/**SubTaskStore */ {
     addNewBucket({ title }, lazyCB) {
 
         if (this.entity !== 'BucketStore') {
-            throw new Error(`not allowed performing task/addNewBucket on entity:${this.entity}`);
+            throw new Error(`not allowed performing task/addNewBucket on entity:${this.entity}`)
         }
 
         try {
@@ -322,7 +333,7 @@ class BucketStore/**SubTaskStore */ {
                     id: v4(), // updated by server 
                     title,
                     status: 'pending', // [pending/completed]
-                    created_at: new Date(),  // updated by server 
+                    created_at: new Date(), // updated by server 
                     subtasks: []
                 }
             }
@@ -333,17 +344,16 @@ class BucketStore/**SubTaskStore */ {
             runInAction(() => {
                 // add another bucket          
                 this.todos.push(bucket)
-                this.state = 'ready'
+                // this.state = 'ready'
                 // NOTE lazy callback from server 
                 if (isFunction(lazyCB)) {
                     lazyCB(bucket).then((updatedBucket) => {
-                        this.todos = this.todos.map(n => {
-
-                            if (n.id === initialID) {
-                                n = updateTodoValues(updatedBucket, n)
+                        this.todos.forEach((todo, inx) => {
+                            if (todo.id === initialID) {
+                                todo = updateTodoValues(updatedBucket, todo)                              
+                                this.todos[inx] = todo 
                                 log('[addNewBucket][lazyUpdate][done]')
                             }
-                            return n
                         })
                     })
                         // TODO Here we can reverse last add in case server/connection drops out 
@@ -387,29 +397,26 @@ class BucketStore/**SubTaskStore */ {
                     todo_id: v4(), // updated by server 
                     title,
                     status: 'pending', // [pending/completed]
-                    created_at: new Date()  // updated by server 
+                    created_at: new Date() // updated by server 
                 }
             }
-
 
             let subtask = new Subtask(tempItem({ title }))
             let initialID = subtask.todo_id
             // add another subtask
             runInAction(() => {
+
                 this.todos.push(subtask)
 
-                this.state = 'ready'
+                // this.state = 'ready'
                 // NOTE lazy callback from server 
                 if (isFunction(lazyCB)) {
 
                     lazyCB(subtask).then((updatedSubtask) => {
-
-                        this.todos = this.todos.map(n => {
+                        this.todos.forEach(n => {
                             if (n.todo_id === initialID) {
                                 n = updateTodoValues(updatedSubtask, n)
-                                log('[addNewSubTask][lazyUpdate][done]')
                             }
-                            return n
                         })
                     })
                         // TODO Here we can reverse last add in case server/connection drops out 

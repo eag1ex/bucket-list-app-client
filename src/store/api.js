@@ -13,6 +13,4 @@ const api = {
     updateSubtaskStatus: (todo_id) => `${apiUrlBase}/rel/subtask/${todo_id}/update-status` // POST
 }
 
-export { api } //>> Object.freeze(api)
-
-
+export { api } // >> Object.freeze(api)
