@@ -55,12 +55,11 @@ export default class MobXStoreAPI {
             method: 'GET', headers: { 'Content-Type': 'application/json;charset=utf-8' }
         }).then(fetchHandler)
             .then(({ response, code }) => {
-                // NOTE prefer this approche, more readable 
+                // NOTE prefer this approach, more readable 
                 runInAction(() => {
                     this.todoData = response || []
 
                     this.todoData.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-
                     this.state = "ready"
                 })
             }).catch(err => {
@@ -225,7 +224,7 @@ export default class MobXStoreAPI {
     }
 
     /**
-     * update store and bucket directly without rerendering component
+     * update store and bucket directly without re-rendering component
      * @param {*} response 
      * @param {*} id 
      */
@@ -243,7 +242,7 @@ export default class MobXStoreAPI {
     }
 
     /**
-     * update store and bucket directly without rerendering component
+     * update store and bucket directly without re-rendering component
      * @param {*} response 
      * @param {*} id 
      */
@@ -262,7 +261,7 @@ export default class MobXStoreAPI {
     }
 
     /**
-     * update store and subtask directly without rerendering component
+     * update store and subtask directly without re-rendering component
      * @param {*} response 
      * @param {*} todo_id 
      */

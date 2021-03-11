@@ -4,8 +4,6 @@ import { BucketStore } from '../components/Todos/Models'
 import MobXStoreAPI from './MobxStore.api'
 import { tasksComplete } from '../utils'
 
-// TODO add server upkeep check  
-
 export default class MobXStore extends MobXStoreAPI {
 
     constructor() {
@@ -28,7 +26,7 @@ export default class MobXStore extends MobXStoreAPI {
 
     /**
      * 
-     * @param {*} data data as object transmited
+     * @param {*} data data as object transmitted
      * @param {*} id id that belongs to each entity, except for homeComponent
      * @param {*} entity [homeComponent','bucket','subtask']
      * @param {*} eventName [addBucket ','addSubtask','subtask','inputTitle,statusChange,statusNoChange]
@@ -46,7 +44,7 @@ export default class MobXStore extends MobXStoreAPI {
 
                     // disabled
                     // if (eventName === 'inputTitle') {
-                    //     // on input type and change set
+                    //  on input type and change set
                     // }
 
                     if (eventName === 'addBucket') {

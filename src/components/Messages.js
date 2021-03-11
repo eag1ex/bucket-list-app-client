@@ -23,7 +23,7 @@ export default function Messages(props) {
 
     if (!message) return null
     return (
-        <div className={classes.root}>
+        <div className={classes.root + ' mx-1'}>
             {type === 'error' ? (<Alert severity="error">{message}</Alert>) : type === 'warning' ? (<Alert severity="warning">{message}</Alert>)
                 : type === 'info' ? (<Alert severity="info">{message}</Alert>)
                     : type === 'success' ? (<Alert severity="success">{message}</Alert>) : null}  

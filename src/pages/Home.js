@@ -14,8 +14,8 @@ function Home(props) {
     return (
         <>
             <div className="row">
-                <div className="col-sm-12 col-md-8 m-auto bucket-wrap mt-1">
-                    <div className="d-flex justify-content-center align-items-center w-50 m-auto">
+                <div className="col-sm-12 col-md-8 m-auto bucket-wrap ">
+                    <div className="d-flex justify-content-center align-items-center m-auto">
                         <Input
                             className='bucket-add-input'
                             variantName='outlined' text='New bucket' 

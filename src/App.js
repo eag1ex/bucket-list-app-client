@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 if (process.env.NODE_ENV === 'development') {
-    log('IN_DEVELOPENT_MODE')
+    log('IN_DEVELOPMENT_MODE')
 }
  
 const mobxstore = new MobXStore()
@@ -25,11 +25,11 @@ function App() {
 
             <ThemeProvider theme={theme}>
                 <Navbar />
-                <div className="container-fluid mt-2">
+                <div className="container-fluid mt-3">
 
                     <Switch>
                         <Route exact path="/" render={(props) => (
-                            <Redirect to="/profile/oozou"/>
+                            <Redirect to="/profile/johndoe"/>
                         )}/>
       
                     </Switch>

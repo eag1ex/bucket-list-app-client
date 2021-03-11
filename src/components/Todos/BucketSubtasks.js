@@ -12,8 +12,6 @@ import Input from '../Input'
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        // width: '100%', 
-        //  maxWidth: 380,
         backgroundColor: theme.palette.background.paper
     }
 }))

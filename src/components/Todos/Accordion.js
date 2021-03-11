@@ -23,8 +23,6 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.secondary,
         flexShrink: 0,
         flexBasis: '15%'
-        // position: 'absolute',
-        // right: '10%'
     }
 }))
 

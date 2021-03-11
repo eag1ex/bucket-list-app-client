@@ -33,7 +33,8 @@ export default function BasicTextFields({ className, entity, add, childStore, te
                 let value = (event.target.value || '')
        
                 if (onUpdate) {
-                    // disable for now
+                    
+                    // NOTE disable for now
                     // onUpdate({ value }, id, entity, 'inputTitle', childStore, () => {
                     // }) 
                 }

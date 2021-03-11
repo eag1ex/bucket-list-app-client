@@ -6,7 +6,8 @@ import { BucketStore } from './Models'
 import { makeStyles } from '@material-ui/core/styles'
 import Accordion from './Accordion'
 import List from '@material-ui/core/List'
-// import { todoList as todoData } from '../../store/dummy.data' // initial dummy data
+
+// import { todoList as todoData } from '../../store/dummy.data' //NOTE initial dummy data
 import Checkbox from '@material-ui/core/Checkbox'
 import BucketSubTasks from './BucketSubtasks'
 import Message from '../Messages'
@@ -35,7 +36,7 @@ const BucketView = observer(({ todo, onUpdate, mobxstore, bucketStore }) => {
                         onClick={(e) => {                         
                             let status = todo.toggle() ? 'completed' : 'pending'
                             let buck = bucketStore.taskByID(todo.id)
-                            // dont emit same event when we dont have any subtaks to perform
+                            // dont emit same event when we dont have any subtasks to perform
                             let eventName = buck.subtasks.length ? 'statusChange' : 'statusNoChange'
                             onUpdate({ status }, todo.id, 'bucket', eventName, bucketStore)
 

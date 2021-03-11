@@ -26,7 +26,7 @@ function ButtonAppBar() {
     const [userName, setUser] = React.useState('')
 
     // assign fake user 
-    const defaultUser = `oozou01`
+    const defaultUser = 'Johndoe'
     delay(3000).then(() => {
         setUser(defaultUser)
     })

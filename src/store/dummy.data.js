@@ -13,7 +13,7 @@ const todoList = [
                 title: 'Visit Bangkok',
                 status: 'pending', // [pending/completed]
                 created_at: ''
-   
+
             },
             {
                 todo_id: v4(),
@@ -111,7 +111,7 @@ const todoList = [
             }
         ]
     },
-    
+
     {
         id: v4(),
         title: 'Malaysia Trip',
