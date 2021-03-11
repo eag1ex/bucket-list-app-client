@@ -61,7 +61,7 @@ const SubTasksListView = observer(({ subTaskStore, inx, onUpdate, currentCount, 
         <div className="d-flex justify-content-between align-items-center flex-row subtask-item">
 
             <Input variantName='standard'
-                text='Add List'
+                text='Add Task'
                 style={{ "& input": { padding: "3px 0 5px" } }}
                 id={subTaskStore.id}
                 entity='subtask'
