@@ -18,13 +18,19 @@ if (process.env.REACT_APP_ENV === 'development') {
 
 const mobxstore = new MobXStore()
 function App() {
-   
+    const basename = process.env.PUBLIC_URL + '/app/'
     return (
-        <BrowserRouter basename={process.env.PUBLIC_URL} >
+        <BrowserRouter basename={basename} >
 
             <ThemeProvider theme={theme}>
                 <Navbar mobxstore={mobxstore} />
                 <div className="container-fluid mt-3">
+
+                    <Switch>
+                        <Route exact path="/app">
+                            <Redirect to="/profile/johndoe"/>
+                        </Route>
+                    </Switch>
 
                     <Switch>
                         <Route exact path="/" render={(props) => (
@@ -50,13 +56,12 @@ function App() {
                             return (<Message type='error' value='Your token expired, please login again at: /login' />)
                         }}/>                  
                     </Switch>
-
+                        
                     <Switch>
-                        <Route path="*" >
-                            <Redirect to="/"/>
+                        <Route exact path="*">
+                            <Redirect to="/profile/johndoe"/>
                         </Route>
                     </Switch>
-
                 </div>
 
             </ThemeProvider>

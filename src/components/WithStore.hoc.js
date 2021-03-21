@@ -6,7 +6,7 @@ import { Redirect } from "react-router-dom"
 const withStoreReady = (Component) => {
     
     const Hoc = observer(({ mobxstore, basename }) => {
-        console.log('basename?', basename)
+    
         if (mobxstore.state === 'no_auth') return (<Redirect to="/session-expired"/>) 
         if (mobxstore.state === 'error') return (<Message type='error' value='No data from server' />) 
         if (mobxstore.state === 'ready') return (<Component mobxstore={mobxstore} />)

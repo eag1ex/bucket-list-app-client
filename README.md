@@ -80,8 +80,7 @@ To know more about `npx create-react-app my-app` please read on here:
 
 
 #### Production
-To test production mode, execute  `npm run build` then install static server with `npm install -g serve`
-and finally execute `serve -s build`
+To run new build, execute  `npm run build` then move all files to `bucket-list-server` in `./views/bucket-app`
 - check `.env.production` variable for api adjustments ...
 
 
