@@ -26,15 +26,15 @@ export const tasksPending = (tasks = []) => {
  * fetch handler if status error reject response
  * @param {*} response 
  */
-export const fetchHandler = async (response) => {
+export const fetchHandler = async (response) => { 
     if (response.ok) return response.json()
     else {
 
         let resp
         try {
-            resp = await response.json() // {message,code,error}
+            resp = await response.json() // {message,code,error}   
         } catch (err) {
-            // 
+          
             resp = err.toString()
         }
         // if our server is up we know what to expect, else can return empty string

@@ -1,5 +1,5 @@
 import { observable, makeObservable, runInAction } from "mobx"
-import { onerror, sq, debug } from 'x-utils-es'
+import { onerror, sq, debug } from 'x-utils-es/'
 import { BucketStore, Bucket, Subtask } from '../components/Todos/Models'
 import { fetchHandler, updateTodoValues, presetPost } from '../utils'
 import { api } from './api'

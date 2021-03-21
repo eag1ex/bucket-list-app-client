@@ -7,7 +7,6 @@ import Navbar from "./components/Navbar"
 import Home from "./pages/Home"
 import Message from './components/Messages'
 import { loggerSetting, log } from 'x-utils-es'
-
 if (process.env.REACT_APP_ENV === 'production') {
     loggerSetting('log', 'off')
     loggerSetting('debug', 'off')
@@ -16,12 +15,12 @@ if (process.env.REACT_APP_ENV === 'production') {
 if (process.env.REACT_APP_ENV === 'development') {
     log('IN_DEVELOPMENT_MODE')
 }
- 
+
 const mobxstore = new MobXStore()
 function App() {
-
+   
     return (
-        <BrowserRouter >
+        <BrowserRouter basename={process.env.PUBLIC_URL} >
 
             <ThemeProvider theme={theme}>
                 <Navbar mobxstore={mobxstore} />
@@ -52,6 +51,12 @@ function App() {
                         }}/>                  
                     </Switch>
 
+                    <Switch>
+                        <Route path="*" >
+                            <Redirect to="/"/>
+                        </Route>
+                    </Switch>
+
                 </div>
 
             </ThemeProvider>
@@ -60,3 +65,12 @@ function App() {
 }
 
 export default App
+
+/*
+<Switch>
+  <Layout exact path="/hotel/:agency" component={Home} />
+  <Layout exact path="/hotel/:agency/list" component={List} />
+  <Layout exact path="/hotel/:agency/detail/:id" component={Detail} />
+
+</Switch>
+* */
