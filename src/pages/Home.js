@@ -1,7 +1,8 @@
-import "@scss/pages/home.component.scss"
+
+import "../theme/scss/pages/home.component.scss"
 import withStoreReady from '../components/withStore.hoc'
 import React from 'react'
-import Input from '@components/Input'
+import Input from '../components/Input'
 import BucketTodo from '../components/Todos/BucketTodo'
 
 function Home(props) {

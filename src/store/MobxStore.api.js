@@ -8,7 +8,7 @@ Object.freeze(api) // no mods please!
 export default class MobXStoreAPI {
 
     todoData = []
-    state = "pending" // "pending", "ready", "error", "updating", "update-error"
+    state = "pending" // "pending", "ready", "error", "updating", "no_auth"
 
     childStoresAvailable = {
         bucketStore: sq()
@@ -63,9 +63,13 @@ export default class MobXStoreAPI {
                     this.state = "ready"
                 })
             }).catch(err => {
-
+                
                 runInAction(() => {
-                    this.state = "error"
+                    if (['NO_TOKEN', 'NOT_AUTHENTICATED'].indexOf(err) !== -1) {
+                        this.state = "no_auth"
+                    } else {
+                        this.state = "error"
+                    }            
                 })
                 onerror('[fetch_bucketListGet]', err)
             })
@@ -91,9 +95,11 @@ export default class MobXStoreAPI {
 
             }).catch(err => {
 
-                // runInAction(() => {
-                //     this.state = "update-error"
-                // })
+                runInAction(() => {
+                    if (['NO_TOKEN', 'NOT_AUTHENTICATED'].indexOf(err) !== -1) {
+                        this.state = "no_auth"
+                    }         
+                })
 
                 onerror('[fetch_createBucketPost]', err)
             })
@@ -124,11 +130,13 @@ export default class MobXStoreAPI {
                 return response
 
             }).catch(err => {
-
-                // runInAction(() => {
-                //     this.state = "update-error"
-                // })
-
+               
+                runInAction(() => {
+                    if (['NO_TOKEN', 'NOT_AUTHENTICATED'].indexOf(err) !== -1) {
+                        this.state = "no_auth"
+                    }         
+                })
+                
                 onerror('[fetch_createSubtaskPost]', err)
             })
     }
@@ -155,10 +163,12 @@ export default class MobXStoreAPI {
                 return response
 
             }).catch(err => {
-
-                // runInAction(() => {
-                //     this.state = "update-error"
-                // })
+               
+                runInAction(() => {
+                    if (['NO_TOKEN', 'NOT_AUTHENTICATED'].indexOf(err) !== -1) {
+                        this.state = "no_auth"
+                    }         
+                })
 
                 onerror('[fetch_updateBucketStatusPost]', err)
             })
@@ -184,10 +194,12 @@ export default class MobXStoreAPI {
                 return response
 
             }).catch(err => {
-
-                // runInAction(() => {
-                //     this.state = "update-error"
-                // })
+           
+                runInAction(() => {
+                    if (['NO_TOKEN', 'NOT_AUTHENTICATED'].indexOf(err) !== -1) {
+                        this.state = "no_auth"
+                    }         
+                })
                 onerror('[fetch_updateBucketOnlyStatus]', err)
             })
     }
@@ -214,10 +226,12 @@ export default class MobXStoreAPI {
                 return response
 
             }).catch(err => {
-
-                // runInAction(() => {
-                //     this.state = "update-error"
-                // })
+               
+                runInAction(() => {
+                    if (['NO_TOKEN', 'NOT_AUTHENTICATED'].indexOf(err) !== -1) {
+                        this.state = "no_auth"
+                    }         
+                })
 
                 onerror('[updateSubtaskStatusPost]', err)
             })

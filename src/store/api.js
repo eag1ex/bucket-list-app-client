@@ -2,7 +2,12 @@
  * Refer to Bucket List server ./config.js file for details
  */
 
-const apiUrlBase = `http://localhost:5000/bucket`
+let apiUrlBase = process.env.REACT_APP_API_URL
+
+if (!apiUrlBase) {
+    console.error('apiUrlBase is empty!')
+}
+// NOTE for this test we dont need auth Bearer since the production
 
 const api = {
     base: apiUrlBase,

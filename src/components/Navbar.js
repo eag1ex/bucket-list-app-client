@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-function ButtonAppBar() {
+function ButtonAppBar({ mobxstore }) {
 
     const [userName, setUser] = React.useState('')
 
@@ -43,7 +43,7 @@ function ButtonAppBar() {
                     <Typography variant="h6" className={classes.title}>
             Bucket List
                     </Typography>
-                    {userName ? (<Chip
+                    {userName && mobxstore.state === 'ready' ? (<Chip
                         avatar={<TagFacesIcon />}
                         className="nav-avatar"
                         label={userName}

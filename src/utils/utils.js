@@ -30,10 +30,16 @@ export const fetchHandler = async (response) => {
     if (response.ok) return response.json()
     else {
 
-        let resp = await response.json() // {message,code,error}
+        let resp
+        try {
+            resp = await response.json() // {message,code,error}
+        } catch (err) {
+            // 
+            resp = err.toString()
+        }
         // if our server is up we know what to expect, else can return empty string
         if (isObject(resp)) {
-            return Promise.reject(resp.message)
+            return Promise.reject(resp.error || resp.message)
         } else Promise.reject(resp || "HTTP-Error: " + resp.status)
     }
 }

@@ -79,6 +79,17 @@ To know more about `npx create-react-app my-app` please read on here:
 * For now there are no coverage and tests optimized, i will get around to it.
 
 
+#### Production
+To test production mode, execute  `npm run build` then install static server with `npm install -g serve`
+and finally execute `serve -s build`
+- check `.env.production` variable for api adjustments ...
+
+
+#### .env
+- `.env.development` looks at `bucket-list-server` running on your local server _(make sure to sets its mode to development)_ or you wont have access the api
+- `.env.production` presumes, it is being hosted on `bucket-list-server`, if you want to run production via `serve -s build` you have to update `.env.production` to be the same as `.env.development`
+
+
 #### TODO
 * NYC and Mocha for coverage
 * State server on Heroku. 
