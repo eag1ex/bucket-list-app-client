@@ -81,23 +81,20 @@ To know more about `npx create-react-app my-app` please read on here:
 
 #### Production
 To run new build, execute  `npm run build` then move all files to `bucket-list-server` in `./views/bucket-app`
-- check `.env.production` variable for api adjustments ...
+- check /add file `.env.production` and variables for api adjustments ...
 
 
 #### .env
 - `.env.development` looks at `bucket-list-server` running on your local server _(make sure to sets its mode to development)_ or you wont have access the api
-- `.env.production` presumes, it is being hosted on `bucket-list-server`, if you want to run production via `serve -s build` you have to update `.env.production` to be the same as `.env.development`
+- `.env.production` presumes, it is being hosted on `bucket-list-server`, you have to update `.env.production` with your REACT_APP_API_URL 
 
 
 #### TODO
 * NYC and Mocha for coverage
-* State server on Heroku. 
-* Add production and stage to bucket-list-server
-
 
 
 ##### LICENSE
-* LICENCE: CC BY-NC-ND
+* LICENCE: CC BY-NC-ND 2.0
 * SOURCE: https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 
 
