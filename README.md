@@ -23,6 +23,12 @@ https://whispering-everglades-48688.herokuapp.com/login
 - limited session time, hosted on free dyno, initial load may take bit longer
 
 
+#### Server
+For server app visit: `https://bitbucket.org/eag1ex/bucket-list-server/`
+
+
+
+
 #### Install 
 Build in `Node.js 12.0.0` and `NPM 6.9.0` in strict mode, maybe supported on higher but not tested
 
