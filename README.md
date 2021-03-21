@@ -12,6 +12,17 @@ You create your a bucket with any number of tasks, all actions connected to rest
 - Mobx Store
 
 
+#### Demo:
+Full featured hosted demo of `bucket-list` on :
+```sh
+https://whispering-everglades-48688.herokuapp.com/login
+# login: eaglex
+# password: eaglex
+```
+- demo database is reset and pureged for every session
+
+
+
 #### Install 
 Build in `Node.js 12.0.0` and `NPM 6.9.0` in strict mode, maybe supported on higher but not tested
 
