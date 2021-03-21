@@ -20,7 +20,7 @@ https://whispering-everglades-48688.herokuapp.com/login
 # password: eaglex
 ```
 - demo database is reset and pureged for every session
-
+- limited session time, hosted on free dyno, initial load may take bit longer
 
 
 #### Install 
