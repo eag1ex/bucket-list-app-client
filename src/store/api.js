@@ -1,5 +1,6 @@
 /**
  * Refer to Bucket List server ./config.js file for details
+ * REACT_APP_API_URL vars are set in `.env.{xxx} files
  */
 
 let apiUrlBase = process.env.REACT_APP_API_URL
