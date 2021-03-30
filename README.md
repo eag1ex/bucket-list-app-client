@@ -94,7 +94,6 @@ To know more about `npx create-react-app my-app` please read on here:
 #### Developer Notes
 - This is my first take on `React with Mobx`, had to overcome view challenges
 - The Api handling could be improved, perhaps patching it directly on the component without `storeOnUpdateHandler` hook
-- No production version provided, as i have not tested it
 
 
 #### Tests
