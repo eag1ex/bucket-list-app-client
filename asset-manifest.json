@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "https://eag1ex.github.io/bucket-list-app-client/static/css/main.041d44e9.chunk.css",
-    "main.js": "https://eag1ex.github.io/bucket-list-app-client/static/js/main.3f7eb3c4.chunk.js",
-    "main.js.map": "https://eag1ex.github.io/bucket-list-app-client/static/js/main.3f7eb3c4.chunk.js.map",
-    "runtime-main.js": "https://eag1ex.github.io/bucket-list-app-client/static/js/runtime-main.2674a38b.js",
-    "runtime-main.js.map": "https://eag1ex.github.io/bucket-list-app-client/static/js/runtime-main.2674a38b.js.map",
-    "static/js/2.86668f14.chunk.js": "https://eag1ex.github.io/bucket-list-app-client/static/js/2.86668f14.chunk.js",
-    "static/js/2.86668f14.chunk.js.map": "https://eag1ex.github.io/bucket-list-app-client/static/js/2.86668f14.chunk.js.map",
-    "index.html": "https://eag1ex.github.io/bucket-list-app-client/index.html",
-    "precache-manifest.31624eba0e67b01c6923c5bf882789a7.js": "https://eag1ex.github.io/bucket-list-app-client/precache-manifest.31624eba0e67b01c6923c5bf882789a7.js",
-    "service-worker.js": "https://eag1ex.github.io/bucket-list-app-client/service-worker.js",
-    "static/css/main.041d44e9.chunk.css.map": "https://eag1ex.github.io/bucket-list-app-client/static/css/main.041d44e9.chunk.css.map",
-    "static/js/2.86668f14.chunk.js.LICENSE.txt": "https://eag1ex.github.io/bucket-list-app-client/static/js/2.86668f14.chunk.js.LICENSE.txt"
+    "main.css": "/static/css/main.041d44e9.chunk.css",
+    "main.js": "/static/js/main.98b0eadd.chunk.js",
+    "main.js.map": "/static/js/main.98b0eadd.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.30a7facc.js",
+    "runtime-main.js.map": "/static/js/runtime-main.30a7facc.js.map",
+    "static/js/2.86668f14.chunk.js": "/static/js/2.86668f14.chunk.js",
+    "static/js/2.86668f14.chunk.js.map": "/static/js/2.86668f14.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.6b1771adb141f1cf0b66cde6fa4d1c01.js": "/precache-manifest.6b1771adb141f1cf0b66cde6fa4d1c01.js",
+    "service-worker.js": "/service-worker.js",
+    "static/css/main.041d44e9.chunk.css.map": "/static/css/main.041d44e9.chunk.css.map",
+    "static/js/2.86668f14.chunk.js.LICENSE.txt": "/static/js/2.86668f14.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.2674a38b.js",
+    "static/js/runtime-main.30a7facc.js",
     "static/js/2.86668f14.chunk.js",
     "static/css/main.041d44e9.chunk.css",
-    "static/js/main.3f7eb3c4.chunk.js"
+    "static/js/main.98b0eadd.chunk.js"
   ]
 }
