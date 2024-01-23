@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/bucket-list-app-client/precache-manifest.9337bea9b0e4fc590e483f7fc680bad1.js"
+  "/bucket-list-app-client/precache-manifest.15ed048fdebc4e2d7ec1ad67a61d8e0a.js"
 );
 
 self.addEventListener('message', (event) => {

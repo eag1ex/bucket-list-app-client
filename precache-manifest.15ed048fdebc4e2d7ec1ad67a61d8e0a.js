@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "ba780c1b20d6d682fc59becbcc8463d4",
+    "revision": "02599b13116794fd7d03cefa5985acdb",
     "url": "/bucket-list-app-client/index.html"
   },
   {
-    "revision": "39597d96713ae64b8d40",
+    "revision": "1005f3f2301afec04339",
     "url": "/bucket-list-app-client/static/css/main.041d44e9.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/bucket-list-app-client/static/js/2.86668f14.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "39597d96713ae64b8d40",
-    "url": "/bucket-list-app-client/static/js/main.289b1776.chunk.js"
+    "revision": "1005f3f2301afec04339",
+    "url": "/bucket-list-app-client/static/js/main.0e987abc.chunk.js"
   },
   {
     "revision": "8fc84ceaa059cff99631",
