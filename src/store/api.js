@@ -13,6 +13,7 @@ if (!apiUrlBase) {
 const api = {
     base: apiUrlBase,
     bucketList: () => `${apiUrlBase}/list`, // GET
+    purgeDatabase: () => `${apiUrlBase}/cron/purge`, // GET
     createBucket: () => `${apiUrlBase}/create`, // POST
     updateBucketStatus: (id) => `${apiUrlBase}/${id}/update-status`, // POST
     updateBucketOnlyStatus: (id) => `${apiUrlBase}/${id}/bucket-only-update-status`, // POST

@@ -52,7 +52,11 @@ export default class MobXStoreAPI {
         this.todoData = []
         debug('[fetch]', api.bucketList())
         return fetch(api.bucketList(), {
-            method: 'GET', headers: { 'Content-Type': 'application/json;charset=utf-8' }
+            method: 'GET',
+            headers: { 
+                ...(process.env.REACT_APP_FUNCTION_CODE ? { 'Function-Code': process.env.REACT_APP_FUNCTION_CODE } : {}),
+                'Content-Type': 'application/json;charset=utf-8'
+            }
         }).then(fetchHandler)
             .then(({ response, code }) => {
                 // NOTE prefer this approach, more readable 

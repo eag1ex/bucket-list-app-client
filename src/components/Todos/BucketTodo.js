@@ -3,6 +3,8 @@ import React from "react"
 import { observer } from "mobx-react-lite"
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { BucketStore } from './Models'
+import Button from '@material-ui/core/Button'
+import Box from '@material-ui/core/Box'
 import { makeStyles } from '@material-ui/core/styles'
 import Accordion from './Accordion'
 import List from '@material-ui/core/List'
@@ -11,6 +13,8 @@ import List from '@material-ui/core/List'
 import Checkbox from '@material-ui/core/Checkbox'
 import BucketSubTasks from './BucketSubtasks'
 import Message from '../Messages'
+import { purgeDatabase } from '../../utils/utils'
+import { delay } from "x-utils-es/umd"
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -19,13 +23,14 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.background.paper
     }
 }))
-
+// <CircularProgress color="inherit" size={20} />
 const BucketView = observer(({ todo, onUpdate, mobxstore, bucketStore }) => {
     // eslint-disable-next-line no-empty
     if (!todo.finished === false) { } // hack fix
 
     // get subtasks completion count
     const [finishedCount, setCount] = React.useState(0)
+ 
     const currentCount = (count) => setCount(count)
 
     return (
@@ -61,8 +66,9 @@ const BucketView = observer(({ todo, onUpdate, mobxstore, bucketStore }) => {
 })
 
 const BucketListView = observer(({ bucketStore, mobxstore, onUpdate }) => {
+    const [deleted, setDelete] = React.useState(0)
     const classes = useStyles()
-    return (<List className={classes.root + ` m-auto bucket-list`}>
+    return (<><List className={classes.root + ` m-auto bucket-list`}>
         {(bucketStore.todos || []).length ? bucketStore.todos.map(todo => (
             <BucketView todo={todo} key={todo.id} onUpdate={onUpdate} mobxstore={mobxstore} bucketStore={bucketStore} />
         )) : <Message type='info' value='Add a new bucket list :)'/> }
@@ -70,7 +76,18 @@ const BucketListView = observer(({ bucketStore, mobxstore, onUpdate }) => {
         { ((bucketStore.todos || []).length && bucketStore.unfinishedCount)
             ? (<Message type='info' value={'Tasks left: ' + bucketStore.unfinishedCount}/>) : ((bucketStore.todos || []).length && !bucketStore.unfinishedCount) ? (<Message type='success' value='All done!'/>) : null
         }
-    </List>)
+    </List><Box style={{ width: '100%', textAlign: 'center', opacity: '40%' }}><Button disabled={deleted === 1} onClick={() => {
+        setDelete(1)
+        purgeDatabase().then(n => {
+            setDelete(2)
+            delay(1000).then(n => {
+                window.location.reload()
+            })
+           
+        }).catch(n => {
+            setDelete(0)
+        })
+    }} color="error" variant="outlined" size="small" style={{ color: 'red', border: '1px solid red' }} >  {deleted === 1 ? <CircularProgress color="inherit" size={20} /> : 'Delete list' }</Button></Box></>)
 })
 
 const BucketComponent = (props) => {

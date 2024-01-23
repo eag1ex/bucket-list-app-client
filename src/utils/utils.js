@@ -1,6 +1,6 @@
 
-import { warn, isObject } from 'x-utils-es'
-
+import { warn, isObject, debug } from 'x-utils-es'
+import { api } from 'src/store/api'
 /**
  * 
  * @param {*} status match available status types 
@@ -66,8 +66,20 @@ export const presetPost = (data) => {
     return {
         method: 'POST',
         headers: {
+            ...(process.env.REACT_APP_FUNCTION_CODE ? { 'Function-Code': process.env.REACT_APP_FUNCTION_CODE } : {}),
             'Content-Type': 'application/json;charset=utf-8'
         },
         body: JSON.stringify(data)
     }
+}
+
+export const purgeDatabase = () => {
+    debug('[fetch]', api.purgeDatabase())
+    return fetch(api.purgeDatabase(), {
+        method: 'GET',
+        headers: { 
+            ...(process.env.REACT_APP_FUNCTION_CODE ? { 'Function-Code': process.env.REACT_APP_FUNCTION_CODE } : {}),
+            'Content-Type': 'application/json;charset=utf-8'
+        }
+    })
 }

@@ -71,6 +71,13 @@ export class BucketStore/** SubTaskStore */ {
     }
    
     /**
+     * remove from database by api call
+     */
+    deleteExecCron() {
+
+    }
+
+    /**
      * @memberof Subtask/Bucket
      * grab either subtask or bucket by id
      * @param {*} id
