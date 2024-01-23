@@ -2,6 +2,9 @@
 #### - [ Developed by Eaglex ](http://eaglex.net)
 
 
+
+
+
 #### About
 This client application is a todo list running on React with Mobx, fully functional and connected to real api.
 You create your a bucket with any number of tasks, all actions connected to rest api end points
@@ -12,6 +15,17 @@ You create your a bucket with any number of tasks, all actions connected to rest
 - Stateless application
 - Mobx Store
 
+
+#### <span style="color:red">Latest updates</span>
+
+<i>Project demo is now available on github pages: </i>
+[ >> bucket-list <<](https://eag1ex.github.io/bucket-list-app-client/)
+
+<br>
+
+<img src="./screens/bucket-list-features.jpg"/>
+
+<br>
 
 ### Demo
 Full featured hosted demo of `bucket-list` on :

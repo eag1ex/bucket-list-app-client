@@ -32,8 +32,9 @@
     "lint:install": "npm i babel-eslint eslint eslint-plugin-node eslint-plugin-standard eslint-plugin-promise@latest --save-dev",
     "lint": "./node_modules/.bin/eslint  --ext .js src",
     "lint:fix": "./node_modules/.bin/eslint --fix --ext .js src",
-    "deploy:github": "gh-pages -d build",
-    "serve": "serve"
+    "serve": "serve",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "engineStrict": true,
   "engines": {
