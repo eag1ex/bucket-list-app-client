@@ -81,7 +81,14 @@ const BucketListView = observer(({ bucketStore, mobxstore, onUpdate }) => {
         purgeDatabase().then(n => {
             setDelete(2)
             delay(1000).then(n => {
-                window.location.reload()
+                if (process.env.REACT_APP_ENV === 'production') {
+                    const origin = window.location.origin
+                    window.location.href = origin + process.env.PUBLIC_URL
+             
+                } else {
+                    window.location.reload()
+                }
+             
             })
            
         }).catch(n => {
