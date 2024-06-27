@@ -130,3 +130,9 @@ To run new build, execute `npm run build` then move all files to `bucket-list-se
 - SOURCE: https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 
 ##### Thank you
+
+
+
+
+### Logs
+- 27/Jun/24, migrated cyclic.sh (EOL) to another koyeb.app
